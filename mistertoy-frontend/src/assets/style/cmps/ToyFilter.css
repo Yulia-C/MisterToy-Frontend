@@ -1,0 +1,16 @@
+.toy-filter {
+    background-color: var(--clr2bg);
+    padding: 1em;
+    margin: 1em auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+
+    >form {
+        display: flex;
+        flex-direction: row;
+        justify-self: center;
+        gap: 1em;
+    }
+}

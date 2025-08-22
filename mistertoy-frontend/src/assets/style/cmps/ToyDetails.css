@@ -1,0 +1,18 @@
+.toy-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.toy-details h1 {
+    color: var(--clr1);
+    font-size: 2em;
+    
+}
+.toy-details h5 {
+    color: var(--clr2);
+}
+.toy-details img {
+    max-width: 200px;
+    display: block;
+    margin: auto;
+}

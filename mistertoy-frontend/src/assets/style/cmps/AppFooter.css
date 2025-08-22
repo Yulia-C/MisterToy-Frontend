@@ -1,0 +1,7 @@
+.app-footer {
+    background-color: var(--clr1);
+    color: var(--clr2bg-light);
+    display: flex;
+    padding:1em;
+    
+}
