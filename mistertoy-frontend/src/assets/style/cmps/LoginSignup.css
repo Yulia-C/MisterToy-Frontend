@@ -1,0 +1,16 @@
+.login-page {
+    margin: auto;
+}
+
+.login-form {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    align-items: center;
+    gap: 1em;
+    outline: 1px solid lightgray;
+    padding: 2em;
+
+    >button {
+        grid-column: 1/-1;
+    }
+}

@@ -60,7 +60,7 @@ export function UserPage() {
 
     if (!user) return <div>Loading...</div>
 
-    return <section className="user-details">
+    return <section className="user-page">
         <pre>
             <h2>Username: {user.username}</h2>
             <h2>User Id: {user._id}</h2>
