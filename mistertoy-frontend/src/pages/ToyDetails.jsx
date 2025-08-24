@@ -4,6 +4,8 @@ import { formatTimestamp } from "../services/util.service.js"
 
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { Chat } from "../cmps/Chat.jsx"
+import { NicePopup } from "../cmps/NicePopup.jsx"
 
 export function ToyDetails() {
 
@@ -11,10 +13,11 @@ export function ToyDetails() {
     const params = useParams()
     const navigate = useNavigate()
 
+    const [isChatOpen, setIsChatOpen] = useState(false)
+
     useEffect(() => {
         loadToy()
     }, [params.toyId])
-
 
     function loadToy() {
         toyService.get(params.toyId)
@@ -26,10 +29,11 @@ export function ToyDetails() {
             })
     }
 
-    function onBack() {
-        // If nothing to do here, better use a Link
-        navigate('/toy')
-        // navigate(-1)
+    function onOpenChat() {
+        setIsChatOpen(true)
+    }
+    function onCLoseChat() {
+        setIsChatOpen(false)
     }
 
     if (!toy) return <div>Loading...</div>
@@ -41,11 +45,19 @@ export function ToyDetails() {
             <h2>{(toy.inStock) ? 'In stock' : 'Out of stock'}</h2>
             <h1>Toy price: {toy.price}</h1>
             <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Enim rem accusantium, itaque ut voluptates quo? Vitae animi maiores nisi, assumenda molestias odit provident quaerat accusamus, reprehenderit impedit, possimus est ad?</p>
-            <button onClick={onBack}>Back to list</button>
+            <div className="flex">
+                <button onClick={() => navigate('/toy')
+                }>Back to list</button>
+                <button onClick={onOpenChat} title="Open chat"> <i className="icon outlined chat" />
+                </button>
+            </div>
             <div>
                 <Link to={`/toy/${toy.nextToyId}`}>Next Toy</Link> |
                 <Link to={`/toy/${toy.prevToyId}`}>Previous Toy</Link>
             </div>
+            <NicePopup isOpen={isChatOpen} onClose={onCLoseChat}>
+                <Chat />
+            </NicePopup>
         </section>
     )
 }

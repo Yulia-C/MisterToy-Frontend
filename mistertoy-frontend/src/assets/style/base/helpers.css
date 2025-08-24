@@ -55,3 +55,22 @@
 .fa.fa-behance::before {
     content: "\f1b4";
 }
+
+.icon::before {
+    font-family: 'Material Symbols Outlined';
+    padding: .2rem;
+    font-style: normal;
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+    font-size: 22px;
+    display: inline-block;
+    vertical-align: middle;
+    object-fit: contain;
+    cursor: pointer;
+}
+.icon.chat::before {
+    content: "sms";
+}

@@ -15,7 +15,7 @@ export const toyService = {
     getDefaultFilter,
     getFilterFromSearchParams,
     getPriceStats,
-    getMaxPage
+    getMaxPage,
 }
 // For Debug (easy access from console):
 window.cs = toyService

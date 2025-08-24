@@ -1,0 +1,45 @@
+.nice-popup {
+    position: fixed;
+    background-color: white;
+    bottom: 50px;
+    left: 10px;
+    box-shadow: 0px 2px 17px 1px var(--shadow-color);
+    border-radius: 10px 10px 0 0;
+    padding: 1em;
+    width: 300px;
+    height: 200px;
+
+    display: grid;
+    grid-template-rows: .5fr 3fr .5fr;
+}
+
+.nice-popup>header {
+    grid-row: 1;
+}
+
+.nice-popup>main {
+    grid-row: 2;
+    align-content: end;
+}
+
+.nice-popup>footer {
+    grid-row: 3;
+}
+
+.backdrop {
+    position: fixed;
+    inset: 0 0 0 0;
+    background-color: rgba(159, 159, 158, 0.412);
+}
+
+.chat-messages {
+    height: 80px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 0.5rem 0.5rem;
+    margin-block: 1em;
+}
+
+.chat>input {
+    width: 75%;
+}
