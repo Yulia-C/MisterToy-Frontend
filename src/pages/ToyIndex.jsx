@@ -3,9 +3,10 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import { ToyFilter } from "../cmps/ToyFilter.jsx"
 import { ToyList } from "../cmps/ToyList.jsx"
-import { toyService } from "../services/toy.service.js"
+// import { toyService } from "../services/toy.service.js"
+import { toyService } from "../services/toy.service.local.js"
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
-import { loadToys, removeToy, saveToy } from "../store/actions/toy.actions.js"
+import { loadToys, removeToy, saveToy, setFilterBy } from "../store/actions/toy.actions.js"
 import { getTruthyValues } from "../services/util.service.js"
 import { SET_TOYS, SET_FILTER } from "../store/reducers/toy.reducer.js"
 import { store } from "../store/store.js"
@@ -35,7 +36,8 @@ export function ToyIndex() {
     }, [filterBy])
 
     function onSetFilterBy(filterBy) {
-        dispatch({ type: SET_FILTER, filterBy })
+        setFilterBy(filterBy)
+        // dispatch({ type: SET_FILTER, filterBy })
     }
 
     function onRemoveToy(toyId) {

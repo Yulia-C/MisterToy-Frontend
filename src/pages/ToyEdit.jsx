@@ -1,8 +1,9 @@
-import { toyService } from "../services/toy.service.js"
+// import { toyService } from "../services/toy.service.js"
+import { toyService } from "../services/toy.service.local.js"
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
 import { saveToy } from "../store/actions/toy.actions.js"
 
-import{ useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 export function ToyEdit() {
@@ -55,7 +56,7 @@ export function ToyEdit() {
             })
     }
 
-    const { txt, price, isDone } = toyToEdit
+    const { txt, price, isInStock } = toyToEdit
 
     return (
         <section className="toy-edit">
@@ -66,8 +67,9 @@ export function ToyEdit() {
                 <label htmlFor="price">Price:</label>
                 <input onChange={handleChange} value={price} type="number" name="price" id="price" />
 
-                <label htmlFor="isDone">isDone:</label>
-                <input onChange={handleChange} value={isDone} type="checkbox" name="isDone" id="isDone" />
+                <label htmlFor="isInStock">
+                    <input onChange={handleChange} value={isInStock} type="checkbox" name="isDone" id="isDone" />
+                    In Stock</label>
 
 
                 <button>Save</button>

@@ -74,11 +74,11 @@ export function ToySort({ filterBy, onSetFilterBy }) {
                 Price
             </label>
 
-            {filterByToEdit.sort && (
+            {/* {filterByToEdit.sort && ( */}
                 <button onClick={toggleSortDirection}>
-                    {filterByToEdit.sortDir === 'asc' ? '⬆️ Ascending' : '⬇️ Descending'}
+                    {filterByToEdit.sortDir === 'asc' ? '⬆️ ' : '⬇️'}
                 </button>
-            )}
+            {/* )} */}
         </div>
     )
 }

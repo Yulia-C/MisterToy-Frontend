@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Chart } from '../cmps/Chart.jsx'
-import { toyService } from '../services/toy.service.js'
+// import { toyService } from '../services/toy.service.js'
+import { toyService } from '../services/toy.service.local.js'
 
 export function Dashboard() {
 

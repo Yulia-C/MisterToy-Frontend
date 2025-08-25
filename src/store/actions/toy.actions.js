@@ -1,6 +1,7 @@
-import { toyService } from "../../services/toy.service.js";
+// import { toyService } from "../../services/toy.service.js";
+import { toyService } from "../../services/toy.service.local.js";
 import { showSuccessMsg } from "../../services/event-bus.service.js";
-import { ADD_TOY, TOY_UNDO, REMOVE_TOY, SET_TOYS, SET_FILTER, SET_IS_LOADING, UPDATE_TOY,SET_DONE_TOYS_PERCENT } from "../reducers/toy.reducer.js";
+import { ADD_TOY, TOY_UNDO, REMOVE_TOY, SET_TOYS, SET_FILTER, SET_IS_LOADING, UPDATE_TOY, SET_DONE_TOYS_PERCENT } from "../reducers/toy.reducer.js";
 import { store } from "../store.js";
 
 export function loadToys(filterBy) {
@@ -15,7 +16,9 @@ export function loadToys(filterBy) {
             throw err
         })
         .finally(() => {
-            store.dispatch({ type: SET_IS_LOADING, isLoading: false })
+            setTimeout(() => {
+                store.dispatch({ type: SET_IS_LOADING, isLoading: false })
+            }, 350)
         })
 }
 
