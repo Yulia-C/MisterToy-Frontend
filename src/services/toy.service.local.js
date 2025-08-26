@@ -32,6 +32,12 @@ function query(filterBy = {}) {
                 toys = toys.filter(toy => regExp.test(toy.txt))
             }
 
+            // if (filterBy.labels.length) {
+            //     toys = toys.filter(toy => {
+            //         filterBy.labels.every(label => toy.labels === filterBy.labels)
+            //     })
+            // }
+
             if (filterBy.price) {
                 toys = toys.filter(toy => toy.price >= filterBy.price)
             }
@@ -40,16 +46,15 @@ function query(filterBy = {}) {
                 toys = toys.filter(toy => toy.inStock === filterBy.inStock)
             }
 
-            if (filterBy.sort) {
-                const dir = filterBy.sortDir === 'desc' ? -1 : 1
-
-                if (filterBy.sort === 'txt') {
-                    toys = toys.sort((a, b) => a.txt.localeCompare(b.txt) * dir)
-                } else if (filterBy.sort === 'createdAt') {
-                    toys = toys.sort((a, b) => (a.createdAt - b.createdAt) * dir)
-                } else if (filterBy.sort === 'price') {
-                    toys = toys.sort((a, b) => (a.price - b.price) * dir)
-                }
+            if (sort.type) {
+                const dir = +filterBy.sortDir
+                toysToShow.sort((a, b) => {
+                    if (sort.type === 'name') {
+                        return a.name.localeCompare(b.name) * dir
+                    } else if (sort.type === 'price' || sort.type === 'createdAt') {
+                        return (a[sort.type] - b[sort.type]) * dir
+                    }
+                })
             }
 
             const filteredToysLength = toys.length
@@ -98,12 +103,12 @@ function getEmptyToy(txt = '', labels = ['Box game', 'Art'], price = 5, inStock 
     }
 }
 
-function getLabels(){
+function getLabels() {
     return Promise.resolve(labels)
 }
 
 function getDefaultFilter() {
-    return { txt: '', price: 0, inStock: '', pageIdx: 0, sort: '', sortDir: 1 }
+    return { txt: '', price: 0, inStock: '', pageIdx: 0, sort: '', sortDir: -1 }
 }
 
 function getFilterFromSearchParams(searchParams) {

@@ -1,7 +1,7 @@
 import { debounce } from "../services/util.service.js"
-
+import  Select  from 'react-select'
+import makeAnimated from 'react-select/animated';
 import { useState, useEffect, useRef } from 'react'
-import { ToySort } from "./ToySort.jsx"
 
 export function ToyFilter({ filterBy, onSetFilterBy }) {
 
@@ -45,7 +45,7 @@ export function ToyFilter({ filterBy, onSetFilterBy }) {
         onSetFilterBy(filterByToEdit)
     }
 
-    const { txt, price, inStock } = filterByToEdit
+    const { txt, price, inStock} = filterByToEdit
     return (
         <section className="toy-filter container">
             <h2>Filter Toys</h2>
@@ -71,6 +71,7 @@ export function ToyFilter({ filterBy, onSetFilterBy }) {
                             checked={filterByToEdit.inStock === false} />
                     </label>
                 </div>
+                {/* {toyLabels && } */}
                 <button hidden>Set Filter</button>
             </form>
         </section>

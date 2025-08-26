@@ -14,71 +14,48 @@ export function ToySort({ filterBy, onSetFilterBy }) {
         debouncedSetFilterRef.current(filterByToEdit)
     }, [filterByToEdit])
 
-    function handleChange(field) {
-        // const field = target.name
-        // let value = target.value
+    function handleChange({ target }) {
+        const field = target.name
+        let value = target.value
 
-        // switch (target.type) {
-        //     case 'number':
-        //     case 'range':
-        //         value = +value || ''
-        //         break
+        switch (target.type) {
+            case 'number':
+            case 'range':
+                value = +value || ''
+                break
 
-        //     case 'checkbox':
-        //         value = target.checked
-        //         break
 
-        //     default: break
-        // }
+            default: break
+        }
+        if (field === 'sortDir') value = target.checked ? -1 : 1
+        setFilterByToEdit(prevFilter => ({ ...prevFilter, [field]: value }))
 
-        setFilterByToEdit(prev => ({
-            ...prev,
-            sort: field === prev.sort ? '' : field
-        }))
+        // setFilterByToEdit(prev => ({
+        //     ...prev,
+        //     sort: field === prev.sort ? '' : field
+        // }))
     }
-    function toggleSortDirection() {
-        setFilterByToEdit(prev => ({
-            ...prev,
-            sortDir: prev.sortDir === 'asc' ? 'desc' : 'asc'
-        }))
-    }
+
 
     return (
         <div className="sort-container">
             <h4>Sort by:</h4>
 
+            <select name="type" value={filterByToEdit.type} onChange={handleChange}>
+                <option value="">Sort by</option>
+                <option value="name">Name</option>
+                <option value="price">Price</option>
+                <option value="createdAt">Date</option>
+            </select>
             <label>
                 <input
                     type="checkbox"
-                    checked={filterByToEdit.sort === 'txt'}
-                    onChange={() => handleChange('txt')}
+                    name="sortDir"
+                    checked={filterByToEdit.sortDir<0}
+                    onChange={handleChange}
                 />
-                Name
+                Descending
             </label>
-
-            <label>
-                <input
-                    type="checkbox"
-                    checked={filterByToEdit.sort === 'createdAt'}
-                    onChange={() => handleChange('createdAt')}
-                />
-                Created Time
-            </label>
-
-            <label>
-                <input
-                    type="checkbox"
-                    checked={filterByToEdit.sort === 'price'}
-                    onChange={() => handleChange('price')}
-                />
-                Price
-            </label>
-
-            {/* {filterByToEdit.sort && ( */}
-                <button onClick={toggleSortDirection}>
-                    {filterByToEdit.sortDir === 'asc' ? '⬆️ ' : '⬇️'}
-                </button>
-            {/* )} */}
         </div>
     )
 }

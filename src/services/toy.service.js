@@ -2,8 +2,9 @@ import { httpService } from './http.service.js'
 import Axios from 'axios'
 
 import { utilService } from './util.service.js'
-const BASE_URL = 'http://localhost:3030/api/toy/'
-
+const BASE_URL = 'toy/'
+// const BASE_URL = 'http://localhost:3030/api/toy/'
+const PAGE_SIZE = 4
 
 var axios = Axios.create({
     withCredentials: true
@@ -24,27 +25,22 @@ export const toyService = {
 window.cs = toyService
 
 function query(filterBy = {}) {
-    return axios.get(BASE_URL, { params: filterBy })
-        .then(res => res.data)
+    return httpService.get(BASE_URL,filterBy )
 }
 
 function get(toyId) {
-    return axios.get(BASE_URL + toyId)
-        .then(res => res.data)
+    return httpService.get(BASE_URL + toyId)
 
 }
 function remove(toyId) {
-    return axios.delete(BASE_URL + toyId)
-        .then(res => res.data)
+    return httpService.delete(BASE_URL + toyId)
 }
 
 function save(toy) {
     if (toy._id) {
-        return axios.put(BASE_URL + toy._id, toy)
-            .then(res => res.data)
+        return httpService.put(BASE_URL + toy._id, toy)
     } else {
-        return axios.post(BASE_URL, toy)
-            .then(res => res.data)
+        return httpService.post(BASE_URL, toy)
     }
 }
 
@@ -61,7 +57,7 @@ function getEmptyToy(txt = '', labels = ['Box game', 'Art'], price = 5, inStock 
 }
 
 function getDefaultFilter() {
-    return { txt: '', price: 0, inStock: '', pageIdx: 0, sort: '', sortDir: 'asc' }
+    return { txt: '', price: 0, inStock: '', pageIdx: 0, sort: '', sortDir: -1 }
 }
 
 function getFilterFromSearchParams(searchParams) {
@@ -83,12 +79,12 @@ function getPriceStats() {
 }
 
 function getMaxPage(filteredToysLength) {
-    if (filteredToysLength)
+    if (filteredToysLength) {
         return Promise.resolve(Math.ceil(filteredToysLength / PAGE_SIZE))
-    return storageService
-        .query(TOY_KEY)
-        .then((toys) => Math.ceil(toys.length / PAGE_SIZE))
-        .catch((err) => {
+    }
+    return query()
+        .then(toys => Math.ceil(toys.length / PAGE_SIZE))
+        .catch(err => {
             console.error('Cannot get max page:', err)
             throw err
         })
