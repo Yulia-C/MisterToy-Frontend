@@ -16,24 +16,13 @@ export function ToySort({ filterBy, onSetFilterBy }) {
 
     function handleChange({ target }) {
         const field = target.name
-        let value = target.value
-
-        switch (target.type) {
-            case 'number':
-            case 'range':
-                value = +value || ''
-                break
-
-
-            default: break
-        }
+        let value = target.type === 'number' ? +target.value : target.value
         if (field === 'sortDir') value = target.checked ? -1 : 1
-        setFilterByToEdit(prevFilter => ({ ...prevFilter, [field]: value }))
 
-        // setFilterByToEdit(prev => ({
-        //     ...prev,
-        //     sort: field === prev.sort ? '' : field
-        // }))
+        setFilterByToEdit(prevSort => ({
+            ...prevSort,
+            [field]: value,
+        }))
     }
 
 
@@ -41,7 +30,7 @@ export function ToySort({ filterBy, onSetFilterBy }) {
         <div className="sort-container">
             <h4>Sort by:</h4>
 
-            <select name="type" value={filterByToEdit.type} onChange={handleChange}>
+            <select name="sort" value={filterByToEdit.sort} onChange={handleChange}>
                 <option value="">Sort by</option>
                 <option value="name">Name</option>
                 <option value="price">Price</option>
@@ -51,7 +40,7 @@ export function ToySort({ filterBy, onSetFilterBy }) {
                 <input
                     type="checkbox"
                     name="sortDir"
-                    checked={filterByToEdit.sortDir<0}
+                    checked={filterByToEdit.sortDir < 0}
                     onChange={handleChange}
                 />
                 Descending

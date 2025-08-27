@@ -20,12 +20,12 @@ function makeId(length = 6) {
 }
 
 function makeLorem(size = 100) {
-    const words = ['The sky', 'above', 'the port', 'was', 'the color' ,'of nature', 'tuned', 'to', 'a live channel', 'All', 'this happened', 'more or less', 'I', 'had', 'the story', 'bit by bit', 'from various people', 'and', 'as generally', 'happens', 'in such cases', 'each time', 'it', 'was', 'a different story', 'a pleasure', 'to', 'burn']
+    const words = ['The sky', 'above', 'the port', 'was', 'the color', 'of nature', 'tuned', 'to', 'a live channel', 'All', 'this happened', 'more or less', 'I', 'had', 'the story', 'bit by bit', 'from various people', 'and', 'as generally', 'happens', 'in such cases', 'each time', 'it', 'was', 'a different story', 'a pleasure', 'to', 'burn']
     var txt = ''
     while (size > 0) {
         size--
         txt += words[Math.floor(Math.random() * words.length)]
-        if (size >= 1 ) txt += ' '
+        if (size >= 1) txt += ' '
     }
     return txt
 }
@@ -38,6 +38,7 @@ function getRandomIntInclusive(min, max) {
 
 function getTwoUniqueRandomItems(array) {
     const idx1 = getRandomIntInclusive(0, array.length - 1)
+    // const idx2 = getRandomIntInclusive(0, array.length - 1)
     let idx2
     do {
         idx2 = getRandomIntInclusive(0, array.length - 1)
@@ -54,7 +55,7 @@ function loadFromStorage(key) {
     return (data) ? JSON.parse(data) : undefined
 }
 
-function animateCSS(el, animation='bounce') {
+function animateCSS(el, animation = 'bounce') {
     const prefix = 'animate__'
     return new Promise((resolve, reject) => {
         const animationName = `${prefix}${animation}`
@@ -91,16 +92,16 @@ export function debounce(func, wait) {
 }
 
 export function formatTimestamp(timestamp) {
-  const date = new Date(timestamp)
+    const date = new Date(timestamp)
 
-  const options = {
-    year: 'numeric',
-    month: 'short',     // e.g., Jan, Feb
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false       // use true for AM/PM
-  }
+    const options = {
+        year: 'numeric',
+        month: 'short',     // e.g., Jan, Feb
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false       // use true for AM/PM
+    }
 
-  return date.toLocaleString('en-US', options)
+    return date.toLocaleString('en-US', options)
 }

@@ -6,7 +6,7 @@ var axios = Axios.create({
     withCredentials: true
 })
 
-const BASE_URL = 'http://localhost:3030/api/auth/'
+const BASE_URL = 'auth/'
 const STORAGE_KEY_LOGGEDIN = 'loggedinUser'
 
 export const userService = {
@@ -22,7 +22,7 @@ export const userService = {
 
 function login({ username, password }) {
 
-    return httpService.post(BASE_URL + 'login', { username, password })
+    return httpService.post(BASE_URL + 'login/', { username, password })
         .then(user => {
             console.log('user FETCH:', user)
             if (user) return _setLoggedinUser(user)
@@ -32,7 +32,7 @@ function login({ username, password }) {
 
 function signup({ username, password, fullname }) {
     const user = { username, password, fullname, score: 10000 }
-    return httpService.post(BASE_URL + 'signup', user)
+    return httpService.post(BASE_URL + 'signup/', user)
         .then(user => {
             if (user) return _setLoggedinUser(user)
             else return Promise.reject('Invalid signup')
@@ -69,11 +69,10 @@ function getLoggedinUser() {
 }
 
 function _setLoggedinUser(user) {
-    const userToSave = { _id: user._id, fullname: user.fullname, username: user.username, score: user.score }
+    const userToSave = { _id: user._id, username: user.username, fullname: user.fullname, score: user.score }
     sessionStorage.setItem(STORAGE_KEY_LOGGEDIN, JSON.stringify(userToSave))
     return userToSave
 }
-
 
 function getEmptyCredentials() {
     return {

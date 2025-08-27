@@ -46,7 +46,7 @@ export function ToyEdit() {
     function onSaveToy(ev) {
         ev.preventDefault()
         saveToy(toyToEdit)
-            .then(({ toy: savedToy }) => {
+            .then((savedToy ) => {
                 navigate('/toy')
                 showSuccessMsg(`Toy Saved (id: ${savedToy._id})`)
             })
@@ -56,7 +56,7 @@ export function ToyEdit() {
             })
     }
 
-    const { txt, price, isInStock } = toyToEdit
+    const { txt, price, inStock } = toyToEdit
 
     return (
         <section className="toy-edit">
@@ -67,8 +67,8 @@ export function ToyEdit() {
                 <label htmlFor="price">Price:</label>
                 <input onChange={handleChange} value={price} type="number" name="price" id="price" />
 
-                <label htmlFor="isInStock">
-                    <input onChange={handleChange} value={isInStock} type="checkbox" name="isDone" id="isDone" />
+                <label htmlFor="inStock">
+                    <input onChange={handleChange} value={inStock} type="checkbox" name="inStock" id="inStock" />
                     In Stock</label>
 
 

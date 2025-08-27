@@ -17,18 +17,17 @@ import { ToySort } from '../cmps/ToySort.jsx'
 
 export function ToyIndex() {
     const dispatch = useDispatch()
-    // const [searchParams,setSearchParams] = useSearchParams();
 
     const toys = useSelector(storeState => storeState.toyModule.toys)
     const isLoading = useSelector(storeState => storeState.toyModule.isLoading)
     const filterBy = useSelector(storeState => storeState.toyModule.filterBy)
+    const toyLabels = useSelector(storeState => storeState.toyModule.toyLabels)
 
     const [searchParams, setSearchParams] = useSearchParams()
     const sortDir = searchParams.get('sortDir');
 
     useEffect(() => {
         setSearchParams(getTruthyValues(filterBy))
-
         loadToys(filterBy)
             .catch(err => {
                 console.log('err:', err)
@@ -39,7 +38,6 @@ export function ToyIndex() {
 
     function onSetFilterBy(filterBy) {
         setFilterBy(filterBy)
-        // dispatch({ type: SET_FILTER, filterBy })
     }
 
     function onRemoveToy(toyId) {
@@ -64,15 +62,16 @@ export function ToyIndex() {
 
         let maxPage = toyService.getMaxPage(toys.length)
         if (newPageIdx < 0) return
-        if (newPageIdx >= maxPage -1) return
+        if (newPageIdx >= maxPage - 1) return
         onSetFilterBy({ ...filterBy, pageIdx: newPageIdx })
     }
     // if (!toys.length) return <div className="empty">No toys to show...</div>
 
     return (
         <section className="toy-index container">
+
             <ToySort filterBy={filterBy} onSetFilterBy={onSetFilterBy} />
-            <ToyFilter filterBy={filterBy} onSetFilterBy={onSetFilterBy} />
+            <ToyFilter filterBy={filterBy} onSetFilterBy={onSetFilterBy} toyLabels={toyLabels} />
             <div>
                 <Link to="/toy/edit" className="btn" >Add Toy</Link>
             </div>

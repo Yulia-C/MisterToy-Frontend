@@ -14,7 +14,7 @@ export function DataTableRow({ toy, onRemoveToy }) {
                 {(isExpanded) ? '-' : '+'}
             </td>
             <td>{toy._id}</td>
-            <td className={(toy.isDone)? 'done' : ''}>{toy.txt}</td>
+            <td className={(toy.inStock)? 'done' : ''}>{toy.txt}</td>
             <td>{toy.price}</td>
             <td>
                 <Link to={`/toy/${toy._id}`}>Details</Link> |
