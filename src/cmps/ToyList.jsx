@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom'
 
 export function ToyList({ toys, onRemoveToy }) {
 
-    if (!toys.length) return <div className="empty">No toys to show...</div>
     if (!toys) return <div className="loading">loading</div>
 
     return (
-        <ul className="toy-list">
+        <ul className="toy-list container">
             {toys.map(toy =>
                 <li key={toy._id}>
                     <ToyPreview toy={toy} />

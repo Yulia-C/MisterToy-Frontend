@@ -16,7 +16,6 @@ import { PaginationBtns } from '../cmps/PaginationBtns.jsx'
 import { ToySort } from '../cmps/ToySort.jsx'
 
 export function ToyIndex() {
-    const dispatch = useDispatch()
 
     const toys = useSelector(storeState => storeState.toyModule.toys)
     const isLoading = useSelector(storeState => storeState.toyModule.isLoading)
@@ -24,7 +23,6 @@ export function ToyIndex() {
     const toyLabels = useSelector(storeState => storeState.toyModule.toyLabels)
 
     const [searchParams, setSearchParams] = useSearchParams()
-    const sortDir = searchParams.get('sortDir');
 
     useEffect(() => {
         setSearchParams(getTruthyValues(filterBy))
@@ -56,7 +54,6 @@ export function ToyIndex() {
             })
     }
 
-
     function onChangePageIdx(diff) {
         let newPageIdx = +filterBy.pageIdx + diff
 
@@ -65,25 +62,22 @@ export function ToyIndex() {
         if (newPageIdx >= maxPage - 1) return
         onSetFilterBy({ ...filterBy, pageIdx: newPageIdx })
     }
-    // if (!toys.length) return <div className="empty">No toys to show...</div>
 
     return (
-        <section className="toy-index container">
-
-            <ToySort filterBy={filterBy} onSetFilterBy={onSetFilterBy} />
-            <ToyFilter filterBy={filterBy} onSetFilterBy={onSetFilterBy} toyLabels={toyLabels} />
-            <div>
+        <section className="toy-index ">
+            <section className="toy-sort-filter">
+                <ToyFilter filterBy={filterBy} onSetFilterBy={onSetFilterBy} toyLabels={toyLabels} />
+                <ToySort filterBy={filterBy} onSetFilterBy={onSetFilterBy} />
+            </section>
+            <div className="container">
                 <Link to="/toy/edit" className="btn" >Add Toy</Link>
             </div>
-            <h2>Toys List</h2>
-            {isLoading ? <div className="loader"></div> :
-                <Fragment>
+            {isLoading ? (<div className="loader"></div>) :
+                (<Fragment>
                     <ToyList toys={toys} onRemoveToy={onRemoveToy} />
                     <hr />
                     <PaginationBtns filterBy={filterBy} onChangePageIdx={onChangePageIdx} />
-
-                </Fragment>
-            }
+                </Fragment>)}
         </section>
     )
 }

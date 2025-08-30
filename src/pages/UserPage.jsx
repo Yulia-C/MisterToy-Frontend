@@ -1,10 +1,11 @@
-import{ useState, useEffect } from 'react'
-import  { useParams, useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 
 import { showSuccessMsg, showErrorMsg } from "../services/event-bus.service.js"
-// import { userService } from "../services/user.service.local.js"
-import { userService } from "../services/user.service.js"
+import { userService } from "../services/user.service.local.js"
+// import { userService } from "../services/user.service.js"
 import { updateUserDetails } from "../store/actions/user.actions.js"
+import { useOnlineStatus } from '../hooks/useOnlineStatus.js'
 
 export function UserPage() {
 
@@ -12,6 +13,7 @@ export function UserPage() {
 
     const params = useParams()
     const navigate = useNavigate()
+    const isOnline = useOnlineStatus()
 
     useEffect(() => {
         loadUser()
@@ -63,8 +65,10 @@ export function UserPage() {
 
     return <section className="user-page">
         <pre>
+
             <h2>Username: {user.username}</h2>
             <h2>User Id: {user._id}</h2>
+            <p>{isOnline ? '✅ Online' : '❌ Disconnected'}</p>
         </pre>
         <h1>Full Name {user.fullname}</h1>
         <form onSubmit={onSaveUser}>

@@ -1,3 +1,4 @@
+import { useEffectUpdate } from "../hooks/useEffectUpdate.js"
 import { debounce } from "../services/util.service.js"
 
 import { useState, useEffect, useRef } from 'react'
@@ -9,8 +10,7 @@ export function ToySort({ filterBy, onSetFilterBy }) {
     const debouncedSetFilterRef = useRef(debounce(onSetFilterBy, 500))
 
 
-    useEffect(() => {
-        // Notify parent
+    useEffectUpdate(() => {
         debouncedSetFilterRef.current(filterByToEdit)
     }, [filterByToEdit])
 
@@ -27,7 +27,7 @@ export function ToySort({ filterBy, onSetFilterBy }) {
 
 
     return (
-        <div className="sort-container">
+        <div className="toy-sort container">
             <h4>Sort by:</h4>
 
             <select name="sort" value={filterByToEdit.sort} onChange={handleChange}>

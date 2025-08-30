@@ -1,13 +1,13 @@
 import { toyService } from "../services/toy.service.js"
 // import { toyService } from "../services/toy.service.local.js"
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
-import { loadToyLabels, saveToy } from "../store/actions/toy.actions.js"
+import { saveToy } from "../store/actions/toy.actions.js"
 import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Select from "react-select"
 import makeAnimated from 'react-select/animated'
-
+import { useConfirmTabClose } from "../hooks/useConfirmTabClose.js"
 
 export function ToyEdit() {
 
@@ -16,13 +16,14 @@ export function ToyEdit() {
     const params = useParams()
     const toyLabels = useSelector(storeState => storeState.toyModule.toyLabels)
     const animatedComponents = makeAnimated()
-
     const labelOptions = toyLabels.map(label => ({
         value: label,
         label: label
     }))
 
     const selectedOptions = labelOptions.filter(option => toyToEdit.labels?.includes(option.value))
+
+    const setHasUnsavedChanges = useConfirmTabClose()
 
     useEffect(() => {
         if (params.toyId) loadToy()
@@ -35,6 +36,8 @@ export function ToyEdit() {
     }
 
     function handleChange(event, meta) {
+        console.log('ev:', event)
+
         let field
         let value
         if (meta?.name === 'labels') {
@@ -59,8 +62,8 @@ export function ToyEdit() {
                     break
             }
         }
-
         setToyToEdit(prevToyToEdit => ({ ...prevToyToEdit, [field]: value }))
+        setHasUnsavedChanges(true)
     }
 
     function onSaveToy(ev) {
@@ -103,7 +106,6 @@ export function ToyEdit() {
                     onChange={handleChange}
                     placeholder="Labels..."
                 />
-
                 <button>Save</button>
             </form>
         </section>

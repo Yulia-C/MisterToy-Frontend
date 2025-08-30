@@ -1,14 +1,10 @@
-
-import { useState } from 'react'
+import heroImg from '../assets/img/HERO_IMG.jpg'
 
 export function Home() {
-    
-    const [isOn, setIsOn] = useState(false)
 
     return (
-        <section className="home">
-            <h1>Toy's R Us!</h1>
-            {isOn && <img src="../assets/img/toy.png" alt="" />}
+        <section className="home full">
+            {<img style={{width:'100vw', height:'100%'}}src={heroImg} alt="home page img" />}
         </section>
     )
 }

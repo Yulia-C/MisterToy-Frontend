@@ -2,7 +2,7 @@ import { utilService } from './util.service.js'
 import { storageService } from './async-storage.service.js'
 
 const TOY_KEY = 'toyDB'
-const PAGE_SIZE = 17
+const PAGE_SIZE = 4
 const labels = ['On wheels', 'Box game', 'Art', 'Baby', 'Doll', 'Puzzle',
     'Outdoor', 'Battery Powered']
 

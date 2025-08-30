@@ -1,22 +1,10 @@
 import { Fragment, useEffect } from "react"
+import { useKeyListener } from "../hooks/useKeyListener.js"
 export function NicePopup({ header, children, footer, isOpen, onClose }) {
 
 
-    useEffect(() => {
-        const handleKeyDown = (event) => {
-            switch (event.key) {
-                case 'Escape':
-                    onClose()
-                    break
-                default: break
-            }
-        }
-        window.addEventListener('keydown', handleKeyDown)
-
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown)
-        }
-
+    useKeyListener('Escape', () => {
+        onClose()
     }, [isOpen, onClose])
 
     if (!isOpen) return null
