@@ -56,7 +56,7 @@ export function Chat() {
     }
 
     return (
-        <section className="flex flex-column">
+        <section className="chat-container ">
             <div className="chat-messages">{msgs && msgs.map(msg => <p key={msg._id}>{msg.from}: {msg.body}</p>)}</div>
             <form className="chat" onSubmit={onSend} >
                 <input type='text' name="body" value={chat} onChange={handleChange} placeholder='Chat bot here :)' />

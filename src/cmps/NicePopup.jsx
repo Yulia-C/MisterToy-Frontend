@@ -1,5 +1,5 @@
 import { Fragment, useEffect } from "react"
-export function NicePopup({ children, isOpen, onClose }) {
+export function NicePopup({ header, children, footer, isOpen, onClose }) {
 
 
     useEffect(() => {
@@ -26,9 +26,9 @@ export function NicePopup({ children, isOpen, onClose }) {
 
             <section onClick={onClose} className="backdrop"></section>
             <section className="nice-popup">
-                <header>Nice Popup Header</header>
+                <header>{header}</header>
                 <main>{children}</main>
-                <footer></footer>
+                <footer>{footer}</footer>
             </section>
 
         </Fragment>

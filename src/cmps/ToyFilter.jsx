@@ -21,14 +21,14 @@ export function ToyFilter({ filterBy, onSetFilterBy, toyLabels }) {
         onSetFilterDebounce(filterByToEdit)
     }, [filterByToEdit])
 
-    function handleChange(eventOrValue, meta) {
+    function handleChange(event, meta) {
         if (meta?.name === 'labels') {
-            const selectedLabels = eventOrValue.map(option => option.value)
+            const selectedLabels = event.map(option => option.value)
             setFilterByToEdit(prev => ({ ...prev, labels: selectedLabels }))
             return
         }
         
-        const target = eventOrValue.target
+        const target = event.target
         const field = target.name
         let value = target.value
         switch (target.type) {

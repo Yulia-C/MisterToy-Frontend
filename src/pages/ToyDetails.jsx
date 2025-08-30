@@ -56,7 +56,11 @@ export function ToyDetails() {
                 <Link to={`/toy/${toy.nextToyId}`}>Next Toy</Link> |
                 <Link to={`/toy/${toy.prevToyId}`}>Previous Toy</Link>
             </div>
-            <NicePopup isOpen={isChatOpen} onClose={onCLoseChat}>
+            <NicePopup
+                header={<h3>Chat about - {toy.txt}</h3>}
+                footer={<h4>Mister Toy support chat</h4>}
+                isOpen={isChatOpen}
+                onClose={onCLoseChat}>
                 <Chat />
             </NicePopup>
         </section>

@@ -95,13 +95,12 @@ function save(toy) {
     }
 }
 
-function getEmptyToy(txt = '', labels = ['Box game', 'Art'], price = 5, inStock = true) {
+function getEmptyToy() {
     return {
-        _id: utilService.makeId(),
-        txt,
-        labels,
-        price,
-        inStock: Math.random() < 0.7,
+        txt: '',
+        labels: utilService.getTwoUniqueRandomItems(labels),
+        price: 0,
+        inStock: true,
         createdAt: Date.now() - utilService.getRandomIntInclusive(0, 1000 * 60 * 60 * 24),
         updatedAt: Date.now()
     }
