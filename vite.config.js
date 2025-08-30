@@ -6,9 +6,7 @@ export default defineConfig({
   base: '/MisterToy-Frontend/',
   build: {
     rollupOptions: {
-      input: {
-        main: 'index.html'
-      }
+      input: './index.html'
     }
   }
 })
