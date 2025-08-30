@@ -50,13 +50,13 @@ function query(filterBy = {}) {
                 toys = toys.filter(toy => toy.inStock === filterBy.inStock)
             }
 
-            if (filterBy.sort.type) {
+            if (filterBy.sort) {
                 const dir = +filterBy.sortDir
-                toysToReturn.sort((a, b) => {
-                    if (sort.type === 'name') {
-                        return a.name.localeCompare(b.name) * dir
-                    } else if (sort.type === 'price' || sort.type === 'createdAt') {
-                        return (a[sort.type] - b[sort.type]) * dir
+                toys.sort((a, b) => {
+                    if (filterBy.sort === 'name') {
+                        return a.txt.localeCompare(b.txt) * dir
+                    } else if (filterBy.sort === 'price' || filterBy.sort === 'createdAt') {
+                        return (a[filterBy.sort] - b[filterBy.sort]) * dir
                     }
                 })
             }
