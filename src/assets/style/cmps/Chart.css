@@ -44,3 +44,8 @@
           height: 0;
       }
   }
+
+  .pie-chart {
+      width: clamp(500px, 50%, 900px);
+      margin: auto;
+  }

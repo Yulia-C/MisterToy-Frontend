@@ -1,13 +1,16 @@
-import { utilService } from './util.service.js'
-import { storageService } from './async-storage.service.js'
+import { httpService } from './http.service.js'
+import Axios from 'axios'
 
-const TOY_KEY = 'toyDB'
-const PAGE_SIZE = 4
+import { utilService } from './util.service.js'
+const BASE_URL = 'toy/'
+// const BASE_URL = 'http://localhost:3030/api/toy/'
+var axios = Axios.create({
+    withCredentials: true
+})
+
+const PAGE_SIZE = 5
 const labels = ['On wheels', 'Box game', 'Art', 'Baby', 'Doll', 'Puzzle',
     'Outdoor', 'Battery Powered']
-
-_createToys()
-
 
 export const toyService = {
     query,
@@ -19,81 +22,34 @@ export const toyService = {
     getFilterFromSearchParams,
     getPriceStats,
     getMaxPage,
+    getInStockValue,
     getToyLabels,
-    getInStockValue
+    getLabelCounts
 }
 // For Debug (easy access from console):
 window.cs = toyService
 
-
-
 function query(filterBy = {}) {
-    return storageService.query(TOY_KEY)
-        .then(toys => {
-
-            if (filterBy.txt) {
-                const regExp = new RegExp(filterBy.txt, 'i')
-                toys = toys.filter(toy => regExp.test(toy.txt))
-            }
-
-            if (filterBy.labels?.length) {
-                toys = toys.filter(toy =>
-                    filterBy.labels.every(label => toy.labels.includes(label))
-                )
-            }
-
-            if (filterBy.price) {
-                toys = toys.filter(toy => toy.price >= filterBy.price)
-            }
-
-            if (typeof filterBy.inStock === 'boolean') {
-                toys = toys.filter(toy => toy.inStock === filterBy.inStock)
-            }
-
-            if (filterBy.sort) {
-                const dir = +filterBy.sortDir
-                toys.sort((a, b) => {
-                    if (filterBy.sort === 'name') {
-                        return a.txt.localeCompare(b.txt) * dir
-                    } else if (filterBy.sort === 'price' || filterBy.sort === 'createdAt') {
-                        return (a[filterBy.sort] - b[filterBy.sort]) * dir
-                    }
-                })
-            }
-
-            const filteredToysLength = toys.length
-            if (filterBy.pageIdx !== undefined) {
-                const startIdx = filterBy.pageIdx * PAGE_SIZE
-                toys = toys.slice(startIdx, startIdx + PAGE_SIZE)
-            }
-
-            return toys
-        })
+    return httpService.get(BASE_URL, filterBy)
 }
 
 function get(toyId) {
-    return storageService.get(TOY_KEY, toyId)
-        .then(toy => {
-            toy = _setNextPrevToyId(toy)
-            return toy
-        })
+    return httpService.get(BASE_URL + toyId)
+        .then(toy => _setNextPrevToyId(toy)
+        )
 }
 
 function remove(toyId) {
-    return storageService.remove(TOY_KEY, toyId)
+    return httpService.delete(BASE_URL + toyId)
 }
 
 function save(toy) {
-    if (toy._id) {
-        // TOY - updatable fields
-        toy.updatedAt = Date.now()
-        return storageService.put(TOY_KEY, toy)
-    } else {
-        toy.createdAt = toy.updatedAt = Date.now()
+    const method = toy._id ? 'put' : 'post'
+    const url = toy._id ? `${BASE_URL}${toy._id}` : BASE_URL
 
-        return storageService.post(TOY_KEY, toy)
-    }
+    return httpService[method](url, toy)
 }
+
 
 function getEmptyToy() {
     return {
@@ -112,12 +68,23 @@ function getInStockValue(inStock) {
     if (inStock === 'false') return false
 }
 
-function getToyLabels() {
-    return Promise.resolve(labels)
+function getLabelCounts() {
+    return query().then(toys => {
+        if (!toys || !Array.isArray(toys)) return null
+        const labelCounts = {}
+        toys.forEach(toy => {
+            toy.labels.forEach(label => {
+                if (!labelCounts[label]) labelCounts[label] = { total: 0, inStock: 0 }
+                labelCounts[label].total++
+                if (toy.inStock) labelCounts[label].inStock++
+            })
+        })
+        return labelCounts
+    })
 }
 
 function getDefaultFilter() {
-    return { txt: '', price: 0, inStock: '', pageIdx: 0, sort: '', sortDir: -1 }
+    return { txt: '', price: 0, inStock: '', pageIdx: 0, labels: [], sort: '', sortDir: -1 }
 }
 
 function getFilterFromSearchParams(searchParams) {
@@ -130,7 +97,7 @@ function getFilterFromSearchParams(searchParams) {
 }
 
 function getPriceStats() {
-    return storageService.query(TOY_KEY)
+    return query()
         .then(toys => {
             const toyCountByPriceMap = _getToyCountByPriceMap(toys)
             const data = Object.keys(toyCountByPriceMap).map(speedName => ({ title: speedName, value: toyCountByPriceMap[speedName] }))
@@ -139,72 +106,25 @@ function getPriceStats() {
 }
 
 function getMaxPage(filteredToysLength) {
-    if (filteredToysLength)
+    if (filteredToysLength) {
         return Promise.resolve(Math.ceil(filteredToysLength / PAGE_SIZE))
-    return storageService
-        .query(TOY_KEY)
-        .then((toys) => Math.ceil(toys.length / PAGE_SIZE))
-        .catch((err) => {
+    }
+    return query()
+        .then(toys => Math.ceil(toys.length / PAGE_SIZE))
+        .catch(err => {
             console.error('Cannot get max page:', err)
             throw err
         })
 }
-// function getProgressStats() {
-//     return storageService.query(TOY_KEY)
-//         .then(toys => {
-//             const toyProgressMap = getToyProgressMap(toys)
-//             const data = Object.keys(toyProgressMap).map(progress => ({ title: progress, value: toyProgressMap[progress] }))
-//             return data
-//         })
-// }
 
-function _createToys() {
-    let toys = utilService.loadFromStorage(TOY_KEY)
+function getToyLabels() {
 
-    if (!toys || !toys.length) {
-        toys = []
-
-        const txts = [
-            'Talking Teddy',
-            'Speedy Car',
-            'Magic Blocks',
-            'Flying Drone',
-            'Puzzle Mania',
-            'Color Splash Set',
-            'Build-a-Robot',
-            'Mini Soccer Set',
-            'Glow in the Dark Stars',
-            'RC Helicopter',
-            'Wooden Train Set',
-            'Plush Bunny',
-            'Lego Builder Kit',
-            'Slime Factory',
-            'Science Lab Kit',
-            'Musical Keyboard',
-            'Water Gun',
-            'Treasure Hunt Game',
-            'Bouncing Ball',
-            'Magic Trick Set'
-        ]
-
-
-        for (let i = 0; i < 20; i++) {
-            const selectedLabels = utilService.getTwoUniqueRandomItems(labels)
-            const txt = txts[utilService.getRandomIntInclusive(0, txts.length - 1)]
-
-            toys.push(_createToy(txt + (i + 1), selectedLabels, utilService.getRandomIntInclusive(1, 10)))
-        }
-        utilService.saveToStorage(TOY_KEY, toys)
-    }
-}
-
-function _createToy(txt, labels, price) {
-    const toy = getEmptyToy(txt, labels, price)
-    return toy
+    // return query(BASE_URL, labels)
+    return Promise.resolve(labels)
 }
 
 function _setNextPrevToyId(toy) {
-    return storageService.query(TOY_KEY).then((toys) => {
+    return query().then((toys) => {
         const toyIdx = toys.findIndex((currToy) => currToy._id === toy._id)
         const nextToy = toys[toyIdx + 1] ? toys[toyIdx + 1] : toys[0]
         const prevToy = toys[toyIdx - 1] ? toys[toyIdx - 1] : toys[toys.length - 1]
@@ -223,29 +143,4 @@ function _getToyCountByPriceMap(toys) {
     }, { low: 0, normal: 0, urgent: 0 })
     return toyCountByPriceMap
 }
-
-function getToyProgressMap(toys) {
-    const map = toys.reduce((acc, toy) => {
-        if (toy.inStock) acc.done++
-        else if (toy.inStock === false) acc.inProgress++
-
-        return acc
-    }, { done: 0, inProgress: 0 })
-
-    const totalProgress = map.done + map.inProgress
-    map.progress = totalProgress ? Math.round((map.done / totalProgress) * 100) : 0
-    return map
-}
-
-
-
-// Data Model:
-// const toy = {
-//     _id: "gZ6Nvy",
-//     txt: "Master Redux",
-//     price: 9,
-//     inStock: false,
-//     createdAt: 1711472269690,
-//     updatedAt: 1711472269690
-// }
 

@@ -10,7 +10,6 @@ export function ToyFilter({ filterBy, onSetFilterBy, toyLabels }) {
     const onSetFilterDebounce = useRef(debounce(onSetFilterBy, 500)).current
 
     const animatedComponents = makeAnimated()
-
     const labelOptions = toyLabels.map(label => ({
         value: label,
         label: label
@@ -42,13 +41,13 @@ export function ToyFilter({ filterBy, onSetFilterBy, toyLabels }) {
                 value = target.checked
                 break
 
-            default:
-                if (field === 'inStock') {
-                    if (value === 'true') value = true
-                    else if (value === 'false') value = false
-                    else value = ''
-                }
+            default: break
         }
+        if (field === 'inStock') {
+        if (value === true || value === 'true') value = true
+        else if (value === false || value === 'false') value = false
+        else value = ''
+    }
 
         setFilterByToEdit(prevFilter => ({ ...prevFilter, [field]: value }))
     }
@@ -96,7 +95,7 @@ export function ToyFilter({ filterBy, onSetFilterBy, toyLabels }) {
                             checked={filterByToEdit.inStock === false} />
                     </label>
                 </div>
-            
+
                 <button hidden>Set Filter</button>
             </form>
         </section>

@@ -21,7 +21,6 @@ export function ToyIndex() {
     const isLoading = useSelector(storeState => storeState.toyModule.isLoading)
     const filterBy = useSelector(storeState => storeState.toyModule.filterBy)
     const toyLabels = useSelector(storeState => storeState.toyModule.toyLabels)
-
     const [searchParams, setSearchParams] = useSearchParams()
 
     useEffect(() => {

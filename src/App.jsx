@@ -13,6 +13,7 @@ import { ToyEdit } from './pages/ToyEdit.jsx'
 import { ToyDetails } from './pages/ToyDetails.jsx'
 import { UserPage } from './pages/UserPage.jsx'
 import { LoginSignup } from './pages/LoginSignup.jsx'
+import { Dashboard } from './pages/Dashboard.jsx'
 
 import { useEffect } from 'react'
 import { loadToyLabels } from './store/actions/toy.actions.js'
@@ -32,6 +33,7 @@ export default function App() {
             <Routes>
               <Route element={<Home />} path="/" />
               <Route element={<About />} path="/about" />
+              <Route element={<Dashboard />} path="/dashboard" />
               <Route path="/auth/login" element={<LoginSignup />} />
               <Route path="/auth/signup" element={<LoginSignup />} />
               <Route element={<ToyIndex />} path="/toy" />
