@@ -8,7 +8,8 @@ button,
     border-radius: 4px;
 }
 
-button:hover, .btn:hover {
+button:hover,
+.btn:hover {
     background-color: var(--clr2);
     color: white;
     scale: 1.05;
@@ -18,4 +19,5 @@ button:hover, .btn:hover {
 input:focus {
     background-color: var(--clr1bg);
     transition: background-color 1s;
+    outline: 1px solid rgb(198, 196, 196);
 }

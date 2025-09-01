@@ -5,6 +5,7 @@ import { login, signup } from '../store/actions/user.actions.js'
 import { useSelector } from 'react-redux'
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from 'react-router-dom'
+import { FormikLoginSignUp } from '../cmps/FormikLoginSignUp.jsx'
 
 export function LoginSignup() {
 
@@ -60,7 +61,7 @@ export function LoginSignup() {
                     onChange={handleChange}
                     required
                     autoFocus
-                    />
+                />
                 <label htmlFor='password'>Password:</label>
                 <input
                     id='password'
@@ -72,26 +73,20 @@ export function LoginSignup() {
                     required
                     autoComplete="off"
                 />
-                <label htmlFor='fullname'>Full Name:</label>
-                {isSignup && <input
-                    type="text"
-                    id='fullname'
-                    name="fullname"
-                    value={credentials.fullname}
-                    placeholder="Full name"
-                    onChange={handleChange}
-                    required
-                />}
+                {isSignup &&
+                    <label htmlFor='fullname'>Full Name:
+                        <input
+                            type="text"
+                            id='fullname'
+                            name="fullname"
+                            value={credentials.fullname}
+                            placeholder="Full name"
+                            onChange={handleChange}
+                            required />
+                    </label>}
                 <button>{isSignup ? 'Signup' : 'Login'}</button>
             </form>
             <div className="btns">
-
-                {/* <a href="/auth" onClick={() => setIsSignUp(!isSignup)}>
-                    {isSignup ?
-                        'Already a member? Login' :
-                        'New user? Signup here'
-                    }
-                </a > */}
 
             </div>
         </div >

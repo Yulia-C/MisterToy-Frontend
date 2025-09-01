@@ -1,0 +1,35 @@
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
+    outline: .5px solid lightgray;
+    padding: .8em;
+    border-radius: 5px;
+}
+
+.formik {
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    max-width: 300px;
+    gap: 10px;
+
+    >input {
+        padding: .5em;
+        margin: .2em;
+        border: .5px solid #d3cece;
+        width: 100%;
+    }
+}
+
+.formik>* {
+    width: 100%;
+    border-radius: 5px;
+}
+
+.errors{
+    color:rgb(245, 73, 73);
+}

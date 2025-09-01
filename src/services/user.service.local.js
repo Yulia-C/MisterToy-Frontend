@@ -32,8 +32,8 @@ function login({ username, password }) {
         })
 }
 
-function signup({ username, password, fullname, balance }) {
-    const user = { username, password, fullname, balance }
+function signup({ username, password, fullname, email, gender, balance }) {
+    const user = { username, password, fullname, email, gender, balance }
     user.createdAt = user.updatedAt = Date.now()
 
     return storageService.post(STORAGE_KEY, user)
@@ -60,8 +60,10 @@ function _setLoggedinUser(user) {
 function getEmptyCredentials() {
     return {
         fullname: '',
-        username: 'muki',
-        password: '123',
+        username: '',
+        password: '',
+        email: '',
+        gender: '',
         isAdmin: false,
     }
 }
