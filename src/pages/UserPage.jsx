@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 
 import { showSuccessMsg, showErrorMsg } from "../services/event-bus.service.js"
-// import { userService } from "../services/user.service.local.js"
 import { userService } from "../services/user.service.js"
 import { updateUserDetails } from "../store/actions/user.actions.js"
 import { useOnlineStatus } from '../hooks/useOnlineStatus.js'

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Chart } from '../cmps/Chart.jsx'
 import { toyService } from '../services/toy.service.js'
 import { LabelDoughnutChart } from '../cmps/LabelDoughnutChart.jsx'
-// import { toyService } from '../services/toy.service.remote.js'
 
 export function Dashboard() {
 

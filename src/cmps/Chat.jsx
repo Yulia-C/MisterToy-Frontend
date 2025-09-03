@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import { userService } from '../services/user.service.js'
-// import { userService } from '../services/user.service.local.js'
 import { utilService } from '../services/util.service.js'
 
 export function Chat() {
