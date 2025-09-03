@@ -10,7 +10,8 @@ export const userService = {
     query,
     getEmptyCredentials,
     updateBalance,
-    updateUserPrefs
+    updateUserPrefs,
+    checkEmailExists
 }
 const STORAGE_KEY_LOGGEDIN = 'user'
 const STORAGE_KEY = 'userDB'
@@ -19,6 +20,16 @@ function query() {
     return storageService.query(STORAGE_KEY)
 }
 
+function checkEmailExists(email) {
+    return query()
+        .then(users => {
+            return users.some(user => user.email === email)
+        })
+        .catch(err => {
+            console.error('Error checking email:', err)
+            return false
+        });
+}
 function getById(userId) {
     return storageService.get(STORAGE_KEY, userId)
 }
