@@ -1,77 +1,58 @@
-import { httpService } from "./http.service.js"
-import Axios from 'axios'
+import { storageService } from "./async-storage.service.js"
 
-// console.log('process.env.NODE_ENV:', process.env.NODE_ENV)
-var axios = Axios.create({
-    withCredentials: true
-})
-
-const BASE_URL = 'auth/'
-const STORAGE_KEY_LOGGEDIN = 'loggedinUser'
 
 export const userService = {
+    getLoggedinUser,
     login,
     logout,
     signup,
     getById,
-    getLoggedinUser,
-    updateBalance,
+    query,
     getEmptyCredentials,
-    checkEmailExists
+    updateBalance,
+    updateUserPrefs
+}
+const STORAGE_KEY_LOGGEDIN = 'user'
+const STORAGE_KEY = 'userDB'
+
+function query() {
+    return storageService.query(STORAGE_KEY)
 }
 
+function getById(userId) {
+    return storageService.get(STORAGE_KEY, userId)
+}
 
-function login({ username, password, email }) {
-
-    return httpService.post(BASE_URL + 'login/', { username, password, email })
-        .then(user => {
-            console.log('user FETCH:', user)
+function login({ username, password }) {
+    return storageService.query(STORAGE_KEY)
+        .then(users => {
+            const user = users.find(user => user.username === username)
             if (user) return _setLoggedinUser(user)
             else return Promise.reject('Invalid login')
         })
 }
 
-function signup({ username, password, fullname, email, gender, balance = 1000 }) {
+function signup({ username, password, fullname, email, gender, balance }) {
     const user = { username, password, fullname, email, gender, balance }
-    return httpService.post(BASE_URL + 'signup/', user)
-        .then(user => {
-            if (user) return _setLoggedinUser(user)
-            else return Promise.reject('Invalid signup')
-        })
+    user.createdAt = user.updatedAt = Date.now()
+
+    return storageService.post(STORAGE_KEY, user)
+        .then(_setLoggedinUser)
 }
 
-function checkEmailExists(email) {
-    return httpService.get(BASE_URL + 'check-email', { email })
-}
 function logout() {
-    return httpService.post(BASE_URL + 'logout')
-        .then(() => {
-            sessionStorage.removeItem(STORAGE_KEY_LOGGEDIN)
-        })
+    sessionStorage.removeItem(STORAGE_KEY_LOGGEDIN)
+    return Promise.resolve()
 }
-
-function updateBalance(diff) {
-    if (getLoggedinUser().balance + diff < 0) return Promise.reject('No credit')
-    return httpService.put('user/', { diff })
-
-        .then(user => {
-            console.log('updatebalance user:', user)
-            _setLoggedinUser(user)
-            return user.balance
-        })
-}
-
-function getById(userId) {
-    return httpService.get('user/' + userId)
-}
-
 
 function getLoggedinUser() {
     return JSON.parse(sessionStorage.getItem(STORAGE_KEY_LOGGEDIN))
 }
 
 function _setLoggedinUser(user) {
-    const userToSave = { _id: user._id, username: user.username, fullname: user.fullname, email: user.email, balance: user.balance }
+    const userToSave = {
+        _id: user._id, fullname: user.fullname
+    }
     sessionStorage.setItem(STORAGE_KEY_LOGGEDIN, JSON.stringify(userToSave))
     return userToSave
 }
@@ -86,3 +67,40 @@ function getEmptyCredentials() {
         isAdmin: false,
     }
 }
+
+function updateBalance(diff) {
+    return getById(getLoggedinUser()._id)
+        .then(user => {
+            if (user.balance + diff < 0) return Promise.reject('No credit')
+            user.balance += diff
+            return storageService.put(STORAGE_KEY, user)
+                .then((user) => {
+                    _setLoggedinUser(user)
+                    return user.balance
+                })
+        })
+}
+
+function updateUserPrefs(updatedUser) {
+    return userService.getById(userService.getLoggedinUser()._id)
+        .then(user => {
+            user = { ...user, ...updatedUser }
+            return storageService.put(STORAGE_KEY, updatedUser)
+                .then((updatedUser) => {
+                    _setLoggedinUser(updatedUser)
+                    return updatedUser
+                })
+        })
+}
+// signup({username: 'muki', password: 'muki1', fullname: 'Muki Ja'})
+// login({username: 'muki', password: 'muki1'})
+
+// Data Model:
+// const user = {
+//     _id: "KAtTl",
+//     username: "muki",
+//     password: "muki1",
+//     fullname: "Muki Ja",
+//     createdAt: 1711490430252,
+//     updatedAt: 1711490430999
+// }
