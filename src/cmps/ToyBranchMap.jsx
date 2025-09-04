@@ -6,32 +6,34 @@ import { AdvancedMarker, APIProvider, InfoWindow, Map, Pin, useMap, useAdvancedM
 import { getBranches } from '../services/toy.service.js'
 import { showErrorMsg } from '../services/event-bus.service.js';
 
-const API_KEY = 'AIzaSyC1jy2FztmDwfLJH78wxACRED-LKl3i6EI'
 
 export function ToyBranchMap() {
     const branches = getBranches()
     console.log('branches:', branches)
-
+    const map = useMap()
+    // usewRef
+    const [markerRef, marker] = useAdvancedMarkerRef();
     const [coords, setCoords] = useState({ lat: 32.0853, lng: 34.7818 })
     const [selectedBranch, setSelectedBranch] = useState(null)
 
     function onPanToBranch(position) {
-        setCoords(position)
+        console.log('position:', position)
+        setSelectedBranch(position)
     }
 
     function handleClick(ev) {
+        console.log('ev:', ev)
         const { latLng } = ev.detail;
-
-        ev.map.panTo(latLng);
-        ev.map.zoom(13)
         setCoords(latLng);
     }
 
     useEffect(() => {
-        // const map = useMap()
-        // console.log('map:', map)
+        if (map && selectedBranch) {
+            map.panTo(selectedBranch.position)
+            map.setZoom(12)
+        }
+    }, [map, selectedBranch])
 
-    }, [])
 
 
 
@@ -51,7 +53,7 @@ export function ToyBranchMap() {
                 </div>
             </section>
 
-            <APIProvider apiKey={API_KEY}>
+            <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
                 <div style={{ height: '400px', width: '500px' }}>
                     <Map
                         onClick={handleClick}
@@ -66,7 +68,7 @@ export function ToyBranchMap() {
                             return (
                                 <AdvancedMarker
                                     key={branch._id}
-                                    // ref={markerRef}
+                                    ref={markerRef}
                                     position={branch.position}
                                     onClick={() => setSelectedBranch(branch._id)}
                                 >
@@ -76,6 +78,7 @@ export function ToyBranchMap() {
                                         <InfoWindow
                                             position={branch.position}
                                             maxWidth={200}
+                                            anchor={branch.position}
                                             onCloseClick={() => setSelectedBranch(null)}
                                         >
                                             <div>
