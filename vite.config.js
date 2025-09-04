@@ -4,9 +4,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
   base: mode === 'development' ? '/' : '/MisterToy-Frontend/', 
-  build: {
-    rollupOptions: {
-      input: './MisterToy-Frontend/index.html'
-    }
-  }
+  // build: {
+  //   rollupOptions: {
+  //     input: './MisterToy-Frontend/index.html'
+  //   }
+  // }
 }))
