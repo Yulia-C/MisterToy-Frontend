@@ -1,50 +1,57 @@
 
-import { useRef, useState, Fragment, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 import { AdvancedMarker, APIProvider, InfoWindow, Map, Pin, useMap, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
 
 import { getBranches } from '../services/toy.service.js'
-import { showErrorMsg } from '../services/event-bus.service.js';
-
 
 export function ToyBranchMap() {
+
+    return (
+        <>
+            <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+                <MapController />
+            </APIProvider>
+        </>
+    )
+}
+
+function MapController() {
     const branches = getBranches()
-    console.log('branches:', branches)
-    const map = useMap()
-    // usewRef
-    const [markerRef, marker] = useAdvancedMarkerRef();
-    const [coords, setCoords] = useState({ lat: 32.0853, lng: 34.7818 })
+
+    const markerRefs = useRef({})
+    const [coords, setCoords] = useState(null)
     const [selectedBranch, setSelectedBranch] = useState(null)
+    const map = useMap()
 
-    function onPanToBranch(position) {
-        console.log('position:', position)
-        setSelectedBranch(position)
-    }
-
-    function handleClick(ev) {
-        console.log('ev:', ev)
-        const { latLng } = ev.detail;
-        setCoords(latLng);
+    function onPanToBranch(branch) {
+        setSelectedBranch(branch)
     }
 
     useEffect(() => {
         if (map && selectedBranch) {
             map.panTo(selectedBranch.position)
-            map.setZoom(12)
+            map.setZoom(10);
         }
     }, [map, selectedBranch])
 
 
+    function handleClick(event) {
+        const latLng = event.detail.latLng
+        setCoords(latLng)
+    }
 
 
     return (
-        <>
+
+        <section className="container">
+
             <section>
                 <h1>We have 5 branches spread out in Israel and you can find them right here:</h1>
                 <div>
                     {branches.map(branch => (
                         <button
-                            onClick={() => onPanToBranch(branch.position)}
+                            onClick={() => onPanToBranch(branch)}
                             key={branch._id}
                         >
                             {branch.city}
@@ -53,48 +60,51 @@ export function ToyBranchMap() {
                 </div>
             </section>
 
-            <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-                <div style={{ height: '400px', width: '500px' }}>
-                    <Map
-                        onClick={handleClick}
-                        defaultCenter={coords}
-                        zoom={7}
-                        style={{ height: '100%', width: '100%' }}
-                        mapId="DEMO_MAP_ID"
-                    >
-                        {branches.map(branch => {
-                            const isActive = selectedBranch === branch._id;
+            <div  style={{ height: '500px', width: '700px' }}>
+                <Map
+                    disableDefaultUI={true}
+                    onClick={handleClick}
+                    defaultCenter={{ lat: 32.0853, lng: 34.7818 }}
+                    defaultZoom={7}
+                    style={{ height: '100%', width: '100%' }}
+                    mapId="DEMO_MAP_ID"
+                >
+                    {branches.map(branch => {
+                        const isActive = selectedBranch?._id === branch._id;
+                        return (
+                            <AdvancedMarker
+                                key={branch._id}
+                                ref={(el) => markerRefs.current[branch._id] = el}
+                                position={branch.position}
+                                onClick={() => setSelectedBranch(branch)}
+                            >
+                                <Pin  {...(isActive
+                                    ? { scale: 1.7, background: 'dodgerblue', glyphColor: 'hotpink', borderColor: 'black' }
+                                    : { scale: 1.1 }
+                                )}  >
 
-                            return (
-                                <AdvancedMarker
-                                    key={branch._id}
-                                    ref={markerRef}
-                                    position={branch.position}
-                                    onClick={() => setSelectedBranch(branch._id)}
-                                >
-                                    <Pin scale={1.1} />
 
                                     {isActive && (
                                         <InfoWindow
-                                            position={branch.position}
                                             maxWidth={200}
-                                            anchor={branch.position}
+                                            anchor={markerRefs.current[selectedBranch._id]}
                                             onCloseClick={() => setSelectedBranch(null)}
                                         >
                                             <div>
-                                                <h4>{branch.city}</h4>
-                                                <p>{branch.address}</p>
-                                                <p>{branch.hours}</p>
-                                                <p>Phone number: {branch.phoneNum}</p>
+                                                <h4>{selectedBranch.city}</h4>
+                                                <p>{selectedBranch.address}</p>
+                                                <p>{selectedBranch.hours}</p>
+                                                <p>Phone number: {selectedBranch.phoneNum}</p>
                                             </div>
                                         </InfoWindow>
                                     )}
-                                </AdvancedMarker>
-                            );
-                        })}
-                    </Map>
-                </div>
-            </APIProvider>
-        </>
+                                </Pin>
+                            </AdvancedMarker>
+                        )
+                    })}
+                </Map>
+            </div>
+
+        </section>
     )
 }
