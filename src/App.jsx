@@ -16,7 +16,7 @@ import { Dashboard } from './pages/Dashboard.jsx'
 
 import { useEffect } from 'react'
 import { loadToyLabels } from './store/actions/toy.actions.js'
-import { FormikLoginSignUp } from './cmps/FormikLoginSignUp.jsx'
+import { FormikLoginSignUp } from './pages/FormikLoginSignUp.jsx'
 
 export default function App() {
   

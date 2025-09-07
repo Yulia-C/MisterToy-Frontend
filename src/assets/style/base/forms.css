@@ -17,7 +17,7 @@ button:hover,
 }
 
 input:focus {
-    background-color: var(--clr1bg);
+    /* background-color: var(--clr1bg); */
     transition: background-color 1s;
     outline: 1px solid rgb(198, 196, 196);
 }

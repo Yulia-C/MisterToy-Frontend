@@ -39,7 +39,7 @@ export function ToyDetails() {
     if (!toy) return <div>Loading...</div>
     return (
         <section className="toy-details">
-            <h1 className={(toy.inStock) ? '' : 'out'}>{toy.txt}</h1>
+            <h1 className={(toy.inStock) ? '' : 'out'}>{toy.name}</h1>
             <h2>Created at {formatTimestamp(toy.createdAt)}</h2>
             {/* <h2>Updated at {formatTimestamp(toy.updatedAt)}</h2> */}
             <h2>{(toy.inStock) ? 'In stock' : 'Out of stock'}</h2>
@@ -56,7 +56,7 @@ export function ToyDetails() {
                 <Link to={`/toy/${toy.prevToyId}`}>Previous Toy</Link>
             </div>
             <NicePopup
-                header={<h3>Chat about - {toy.txt}</h3>}
+                header={<h3>Chat about - {toy.name}</h3>}
                 footer={<h4>Mister Toy support chat</h4>}
                 isOpen={isChatOpen}
                 onClose={onCLoseChat}>

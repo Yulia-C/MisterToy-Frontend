@@ -64,17 +64,12 @@ function CustomInput({ field }) {
 
 export function FormikLoginSignUp() {
 
-    // const [credentials, setCredentials] = useState(userService.getEmptyCredentials())
     const loggedinUser = useSelector(storeState => storeState.loggedinUser)
 
     const navigate = useNavigate()
     const location = useLocation()
     const isSignup = location.pathname.includes('signup')
 
-    // function handleChange({ target }) {
-    //     const { name: field, value } = target
-    //     setCredentials(prevCreds => ({ ...prevCreds, [field]: value }))
-    // }
     useEffect(() => {
 
     }, [loggedinUser])
@@ -168,8 +163,7 @@ export function FormikLoginSignUp() {
             </div>
 
         </section >
-    );
-};
+    )
+}
 
 
-// ReactDOM.render(<WithMaterialUI />, document.getElementById('root'));

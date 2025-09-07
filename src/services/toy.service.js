@@ -4,7 +4,7 @@ import { storageService } from './async-storage.service.js'
 const TOY_KEY = 'toyDB'
 const PAGE_SIZE = 5
 const labels = ['On wheels', 'Box game', 'Art', 'Baby', 'Doll', 'Puzzle',
-    'Outdoor', 'Battery Powered']
+    'Outdoor', 'Battery Powered',]
 
 _createToys()
 
@@ -29,31 +29,33 @@ window.cs = toyService
 
 
 function query(filterBy = {}) {
-    return storageService.query(TOY_KEY)
-        .then(toys => {
+    
+    return storageService.query(TOY_KEY).then(toys => {
+       
+        let filteredToys = [...toys]
 
             if (filterBy.txt) {
                 const regExp = new RegExp(filterBy.txt, 'i')
-                toys = toys.filter(toy => regExp.test(toy.txt))
+                filteredToys = filteredToys.filter(toy => regExp.test(toy.name))
             }
 
             if (filterBy.labels?.length) {
-                toys = toys.filter(toy =>
+                filteredToys = filteredToys.filter(toy =>
                     filterBy.labels.every(label => toy.labels.includes(label))
                 )
             }
 
             if (filterBy.price) {
-                toys = toys.filter(toy => toy.price >= filterBy.price)
+                filteredToys = filteredToys.filter(toy => toy.price >= filterBy.price)
             }
 
             if (typeof filterBy.inStock === 'boolean') {
-                toys = toys.filter(toy => toy.inStock === filterBy.inStock)
+                filteredToys = filteredToys.filter(toy => toy.inStock === filterBy.inStock)
             }
 
             if (filterBy.sort) {
                 const dir = +filterBy.sortDir
-                toys.sort((a, b) => {
+                filteredToys.sort((a, b) => {
                     if (filterBy.sort === 'name') {
                         return a.txt.localeCompare(b.txt) * dir
                     } else if (filterBy.sort === 'price' || filterBy.sort === 'createdAt') {
@@ -62,13 +64,13 @@ function query(filterBy = {}) {
                 })
             }
 
-            const filteredToysLength = toys.length
+            const filteredToysLength = filteredToys.length
             if (filterBy.pageIdx !== undefined) {
                 const startIdx = filterBy.pageIdx * PAGE_SIZE
-                toys = toys.slice(startIdx, startIdx + PAGE_SIZE)
+                filteredToys = filteredToys.slice(startIdx, startIdx + PAGE_SIZE)
             }
 
-            return toys
+            return Promise.resolve(filteredToys)
         })
 }
 
@@ -96,10 +98,10 @@ function save(toy) {
     }
 }
 
-function getEmptyToy(_id, txt, price = 10, inStock = true) {
+function getEmptyToy(_id, name, price = 10, inStock = true) {
     return {
         _id,
-        txt,
+        name,
         labels: utilService.getTwoUniqueRandomItems(labels),
         price,
         inStock: Math.random() < 0.7,
@@ -115,6 +117,7 @@ function getInStockValue(inStock) {
 }
 
 function getToyLabels() {
+    // return[...labels]
     return Promise.resolve(labels)
 }
 
@@ -219,7 +222,7 @@ function _createToys() {
     if (!toys || !toys.length) {
         toys = []
 
-        const txts = [
+        const names = [
             'Talking Teddy',
             'Speedy Car',
             'Magic Blocks',
@@ -245,16 +248,16 @@ function _createToys() {
 
         for (let i = 0; i < 20; i++) {
             const selectedLabels = utilService.getTwoUniqueRandomItems(labels)
-            const txt = txts[utilService.getRandomIntInclusive(0, txts.length - 1)]
+            const name = names[utilService.getRandomIntInclusive(0, names.length - 1)]
             const _id = utilService.makeId()
-            toys.push(_createToy(_id, txt + '-' + (i + 1), utilService.getRandomIntInclusive(10, 100), selectedLabels,))
+            toys.push(_createToy(_id, name + '-' + (i + 1), utilService.getRandomIntInclusive(10, 100), selectedLabels,))
         }
         utilService.saveToStorage(TOY_KEY, toys)
     }
 }
 
-function _createToy(_id, txt, price, labels) {
-    const toy = getEmptyToy(_id, txt, price, labels)
+function _createToy(_id, name, price, labels) {
+    const toy = getEmptyToy(_id, name, price, labels)
     return toy
 }
 
