@@ -60,7 +60,7 @@ function MapController() {
                 </div>
             </section>
 
-            <div  style={{ height: '500px', width: '700px' }}>
+            <div  className="map-container">
                 <Map
                     disableDefaultUI={true}
                     onClick={handleClick}

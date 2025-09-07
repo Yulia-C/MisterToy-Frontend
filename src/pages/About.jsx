@@ -5,7 +5,7 @@ export function About() {
 
 
     return (
-        <section className="container">
+        <section className="about container">
             <h4>
                 At Mister Toy, we believe that play is essential to a child’s development — and to their joy!
                 Founded with a passion for creativity and imagination, our toy store is dedicated to bringing smiles to kids (and kids at heart)

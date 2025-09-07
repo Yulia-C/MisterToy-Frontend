@@ -1,6 +1,6 @@
 .main-layout {
     display: grid;
-    grid-template-columns: 1.6rem 1fr 1.6rem;
+    grid-template-columns: .5rem 1fr .5rem;
 }
 
 .main-layout>* {
@@ -15,4 +15,37 @@
     max-width: 900px;
     padding: 1em;
     margin: auto;
+}
+
+
+@media (max-width: 750px) {
+
+    .toy-filter {
+        display: flex;
+        flex-direction: column;
+    }
+       .nice-popup {
+        width: 90%;
+    }
+    
+    .chat-container>.chat-messages {
+        height: 40dvh;
+    }
+    
+}
+
+@media(min-width:751px) {
+    
+    .nice-popup {
+    width: 60%;
+    
+    }
+
+    .toy-sort-filter {
+        padding: 1em;
+    }
+
+    .toy-filter .radio-btns {
+        display: flex;
+    }
 }

@@ -6,7 +6,7 @@
     gap: 15px;
 }
 
-.toy-list li {
+.toy-list>li {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -17,7 +17,6 @@
 
 .toy-list-btns button {
     box-shadow: 0px 3px 4px 0px rgb(203, 201, 201);
-    /* transition:  hover 0.3s; */
 }
 
 .toy-list-btns>button:hover {

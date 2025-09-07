@@ -82,17 +82,17 @@ export function ToyFilter({ filterBy, onSetFilterBy, toyLabels }) {
 
                 <div className="radio-btns">
 
-                    <label htmlFor="inStock-all">All
+                    <label htmlFor="inStock-all">
                         <input value='' id="inStock-all" type="radio" onChange={handleChange} name="inStock"
-                            checked={filterByToEdit.inStock === ''} />
+                            checked={filterByToEdit.inStock === ''} />All
                     </label>
-                    <label htmlFor="inStock-true">In Stock
+                    <label htmlFor="inStock-true">
                         <input value="true" id="inStock-true" type="radio" onChange={handleChange} name="inStock"
-                            checked={filterByToEdit.inStock === true} />
+                            checked={filterByToEdit.inStock === true} />In Stock
                     </label>
-                    <label htmlFor="inStock-false">Out of stock
+                    <label htmlFor="inStock-false">
                         <input value="false" id="inStock-false" type="radio" onChange={handleChange} name="inStock"
-                            checked={filterByToEdit.inStock === false} />
+                            checked={filterByToEdit.inStock === false} />Out of stock
                     </label>
                 </div>
 

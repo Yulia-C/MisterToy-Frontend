@@ -39,7 +39,7 @@ export function AppHeader() {
         <header className="app-header full main-layout">
             <section className="header-container">
                 <h1>'React' Toy App</h1>
-                {Object.keys(lngs).map(lng => (
+                {/* {Object.keys(lngs).map(lng => (
                     <button
                         key={lng}
                         className="btn"
@@ -48,7 +48,7 @@ export function AppHeader() {
                     >
                         {lngs[lng].nativeName}
                     </button>
-                ))}
+                ))} */}
 
                 <nav className="app-nav">
                     <NavLink to="/">{t('home')}</NavLink>

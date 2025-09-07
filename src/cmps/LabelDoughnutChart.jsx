@@ -36,9 +36,8 @@ export function LabelDoughnutChart({ labelCounts = {} }) {
             ],
         }
         return data
-    };
+    }
     const data = getData(labelCounts)
-    console.log('data:', data)
 
     return (
         <Doughnut data={data} />
