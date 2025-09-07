@@ -36,21 +36,20 @@ export function ToyIndex() {
         setFilterBy(filterBy)
     }
 
-    function onRemoveToy(toyId) {
-        const confirmation = confirm('Are you sure?')
-        if (!confirmation) return
-        removeToy(toyId)
-            .then(() => {
-                const updatedToys = toys.filter(toy => toy._id !== toyId)
-                store.dispatch({ type: SET_TOYS, toys: updatedToys })
-                showSuccessMsg(`Toy removed`)
-            })
+   async function onRemoveToy(toyId) {
+    const confirmation = confirm('Are you sure?')
+    if (!confirmation) return
 
-            .catch(err => {
-                console.log('err:', err)
-                showErrorMsg('Cannot remove toy ' + toyId)
-            })
+    try {
+        await removeToy(toyId)
+        const updatedToys = toys.filter(toy => toy._id !== toyId)
+        store.dispatch({ type: SET_TOYS, toys: updatedToys })
+        showSuccessMsg('Toy removed')
+    } catch (err) {
+        console.log('err:', err)
+        showErrorMsg('Cannot remove toy ' + toyId)
     }
+}
 
     function onChangePageIdx(diff) {
         let newPageIdx = +filterBy.pageIdx + diff
@@ -62,7 +61,7 @@ export function ToyIndex() {
     }
 
     return (
-        <section className="toy-index ">
+        <section className="toy-index container">
             <section className="toy-sort-filter">
                 <ToyFilter filterBy={filterBy} onSetFilterBy={onSetFilterBy} toyLabels={toyLabels} />
                 <ToySort filterBy={filterBy} onSetFilterBy={onSetFilterBy} />

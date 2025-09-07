@@ -12,16 +12,14 @@
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1000px;
     padding: 1em;
-    margin: auto;
 }
 
 
-@media (max-width: 750px) {
+@media (max-width: 700px) {
 
     .toy-filter {
-        display: flex;
         flex-direction: column;
     }
        .nice-popup {
@@ -34,7 +32,7 @@
     
 }
 
-@media(min-width:751px) {
+@media(min-width:701px) {
     
     .nice-popup {
     width: 60%;
@@ -47,5 +45,8 @@
 
     .toy-filter .radio-btns {
         display: flex;
+    }
+    .container{
+        margin:auto;
     }
 }

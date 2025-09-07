@@ -28,8 +28,9 @@ function checkEmailExists(email) {
         .catch(err => {
             console.error('Error checking email:', err)
             return false
-        });
+        })
 }
+
 function getById(userId) {
     return storageService.get(STORAGE_KEY, userId)
 }

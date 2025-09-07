@@ -24,32 +24,6 @@
     }
 }
 
-
-.progress-bar-container {
-    max-width: 250px;
-    width: 20vw;
-    height: 50px;
-    background-color: white;
-    margin-inline: .5em;
-    position: relative;
-}
-
-.progress-bar-container div {
-    background-color: limegreen;
-    height: 100%;
-    transition: 0.4s;
-}
-
-
-.progress-bar-container span {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    width: fit-content;
-    height: fit-content;
-    color: rgb(8, 3, 28);
-}
-
 a.active {
     color: rgb(241, 212, 241);
     font-weight: 600;

@@ -20,15 +20,14 @@ export async function loadToys(filterBy) {
     }
 }
 
-export function removeToy(toyId) {
-    return toyService.remove(toyId)
-        .then(() => {
-            store.dispatch({ type: REMOVE_TOY, toyId })
-        })
-        .catch(err => {
-            console.log('toy action -> Cannot remove toy', err)
-            throw err
-        })
+export async function removeToy(toyId) {
+    try {
+       await toyService.remove(toyId)
+        store.dispatch({ type: REMOVE_TOY, toyId })
+    } catch (err) {
+        console.log('toy action -> Cannot remove toy', err)
+        throw err
+    }
 }
 
 export function removeToyOptimistic(toyId) {
