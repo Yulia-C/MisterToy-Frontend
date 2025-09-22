@@ -1,18 +1,45 @@
 .toy-details {
+    display: grid;
+    grid-template-columns: minmax(200px, 600px);
+    justify-self: center;
+    padding: 1em;
+
+}
+
+.details-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    gap: 1em;
+
+    >div {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    >.btns-next-prev {
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
+
+        >a:hover {
+            color: rgb(25, 154, 148)
+        }
+    }
 }
+
 .toy-details h1 {
     color: var(--clr1);
     font-size: 2em;
-    
+
 }
+
 .toy-details h5 {
     color: var(--clr2);
 }
+
 .toy-details img {
-    max-width: 200px;
+    /* max-width: 500px; */
     display: block;
     margin: auto;
 }

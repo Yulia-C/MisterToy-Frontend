@@ -14,15 +14,13 @@ import { ToyDetails } from './pages/ToyDetails.jsx'
 import { UserPage } from './pages/UserPage.jsx'
 import { Dashboard } from './pages/Dashboard.jsx'
 
-import { useEffect } from 'react'
-import { loadToyLabels } from './store/actions/toy.actions.js'
-import { FormikLoginSignUp } from './pages/FormikLoginSignUp.jsx'
+import { FormikLoginSignUp } from './cmps/FormikLoginSignUp.jsx'
+import { useColorSchemeListener } from './hooks/useColorSchemeListener.js'
+import { ReviewIndex } from './pages/ReviewIndex.jsx'
 
 export default function App() {
-  
-  useEffect(() => {
-    loadToyLabels()
-  }, [])
+
+  // useColorSchemeListener()
 
   return (
     <Provider store={store}>
@@ -41,6 +39,7 @@ export default function App() {
               <Route element={<ToyEdit />} path="/toy/edit/:toyId" />
               <Route element={<ToyDetails />} path="/toy/:toyId" />
               <Route element={<UserPage />} path="/user/:userId" />
+              <Route element={<ReviewIndex />} path="/review" />
             </Routes>
           </main>
           <AppFooter />

@@ -1,6 +1,6 @@
 export function PaginationBtns({ onChangePageIdx, filterBy }) {
     return (
-        <div className="pagination-btns flex align-center">
+        <div className="pagination-btns flex align-center justify-center">
             <button className="btn" onClick={() => onChangePageIdx(-1)}>
                 Previous
             </button>

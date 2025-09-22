@@ -3,12 +3,10 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import { ToyFilter } from "../cmps/ToyFilter.jsx"
 import { ToyList } from "../cmps/ToyList.jsx"
-import { toyService } from "../services/toy.service.js"
+
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
-import { loadToys, removeToy, saveToy, setFilterBy } from "../store/actions/toy.actions.js"
+import { loadToys, removeToyOptimistic, setFilterBy } from "../store/actions/toy.actions.js"
 import { getTruthyValues } from "../services/util.service.js"
-import { SET_TOYS, SET_FILTER } from "../store/reducers/toy.reducer.js"
-import { store } from "../store/store.js"
 
 import { Link, useSearchParams } from 'react-router-dom'
 import { PaginationBtns } from '../cmps/PaginationBtns.jsx'
@@ -19,56 +17,58 @@ export function ToyIndex() {
     const toys = useSelector(storeState => storeState.toyModule.toys)
     const isLoading = useSelector(storeState => storeState.toyModule.isLoading)
     const filterBy = useSelector(storeState => storeState.toyModule.filterBy)
-    const toyLabels = useSelector(storeState => storeState.toyModule.toyLabels)
+    // const toyLabels = useSelector(storeState => storeState.toyModule.toyLabels)
+    const maxPage = useSelector(storeState => storeState.toyModule.maxPage)
+    const loggedinUser = useSelector(storeState => storeState.userModule.loggedinUser)
+
     const [searchParams, setSearchParams] = useSearchParams()
 
     useEffect(() => {
         setSearchParams(getTruthyValues(filterBy))
+        // loadToys(filterBy)
+        //     .catch(err => {
+        //         console.log('err:', err)
+        //         showErrorMsg('Cannot load toys')
+        //     })
         loadToys(filterBy)
-            .catch(err => {
-                console.log('err:', err)
-                showErrorMsg('Cannot load toys')
-            })
 
     }, [filterBy])
+
 
     function onSetFilterBy(filterBy) {
         setFilterBy(filterBy)
     }
 
-   async function onRemoveToy(toyId) {
-    const confirmation = confirm('Are you sure?')
-    if (!confirmation) return
-
-    try {
-        await removeToy(toyId)
-        const updatedToys = toys.filter(toy => toy._id !== toyId)
-        store.dispatch({ type: SET_TOYS, toys: updatedToys })
-        showSuccessMsg('Toy removed')
-    } catch (err) {
-        console.log('err:', err)
-        showErrorMsg('Cannot remove toy ' + toyId)
+    async function onRemoveToy(toyId) {
+        try {
+            await removeToyOptimistic(toyId)
+            loadToys()
+            showSuccessMsg('Toy removed')
+        } catch (error) {
+            console.log('Cannot remove toy', error)
+            showErrorMsg('Cannot remove toy')
+        }
     }
-}
+
 
     function onChangePageIdx(diff) {
         let newPageIdx = +filterBy.pageIdx + diff
-
-        let maxPage = toyService.getMaxPage(toys.length)
-        if (newPageIdx < 0) return
-        if (newPageIdx >= maxPage - 1) return
-        onSetFilterBy({ ...filterBy, pageIdx: newPageIdx })
+        if (newPageIdx < 0) newPageIdx = maxPage - 1
+        if (newPageIdx >= maxPage) newPageIdx = 0
+        onSetFilterBy({ pageIdx: newPageIdx })
     }
 
     return (
-        <section className="toy-index container">
+        <section className="toy-index ">
             <section className="toy-sort-filter">
-                <ToyFilter filterBy={filterBy} onSetFilterBy={onSetFilterBy} toyLabels={toyLabels} />
+                <ToyFilter filterBy={filterBy} onSetFilterBy={onSetFilterBy} />
                 <ToySort filterBy={filterBy} onSetFilterBy={onSetFilterBy} />
             </section>
-            <div className="container">
-                <Link to="/toy/edit" className="btn" >Add Toy</Link>
-            </div>
+            {loggedinUser &&
+                <div className="container">
+                    <Link to="/toy/edit" className="btn" >Add Toy</Link>
+                </div>
+            }
             {isLoading ? (<div className="loader"></div>) :
                 (<Fragment>
                     <ToyList toys={toys} onRemoveToy={onRemoveToy} />

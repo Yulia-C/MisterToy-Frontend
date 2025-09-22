@@ -9,16 +9,24 @@ export const SET_TOY_LABELS = 'SET_TOY_LABELS'
 
 export const TOY_UNDO = 'TOY_UNDO'
 export const SET_DONE_TOYS_PERCENT = ' SET_DONE_TOYS_PERCENT'
+export const SET_MAX_PAGE = 'SET_MAX_PAGE'
 
 export const SET_FILTER = 'SET_FILTER'
 export const SET_IS_LOADING = 'SET_IS_LOADING'
+
+export const TOGGLE_CART = 'TOGGLE_CART'
+export const ADD_TO_CART = 'ADD_TO_CART'
+export const REMOVE_FROM_CART = 'REMOVE_FROM_CART'
+export const CLEAR_CART = 'CLEAR_CART'
+
 
 const initialState = {
     toys: [],
     isLoading: false,
     filterBy: toyService.getDefaultFilter(),
     lastToys: [],
-    toyLabels: []
+    maxPage: 0,
+    cart: [],
 }
 
 export function toyReducer(state = initialState, action = {}) {
@@ -43,9 +51,10 @@ export function toyReducer(state = initialState, action = {}) {
                 ...state,
                 toys: state.toys.map(toy => toy._id === action.toy._id ? action.toy : toy)
             }
-        case SET_TOY_LABELS:
-            return { ...state, toyLabels: action.labels }
-            
+
+        case SET_MAX_PAGE:
+            return { ...state, maxPage: action.maxPage }
+
         case SET_DONE_TOYS_PERCENT:
             return { ...state, progressStats: cmd.progressStats }
 
@@ -66,6 +75,18 @@ export function toyReducer(state = initialState, action = {}) {
                 toys: [...state.lastToys]
             }
 
+        case TOGGLE_CART:
+            return { ...state, showCart: !state.showCart }
+
+        case ADD_TO_CART:
+            return { ...state, cart: [...state.cart, action.toy] }
+
+        case REMOVE_FROM_CART:
+            var cart = state.cart.filter((toy) => toy._id !== action.toyId)
+            return { ...state, cart }
+
+        case CLEAR_CART:
+            return { ...state, cart: [] }
 
         default:
             return state

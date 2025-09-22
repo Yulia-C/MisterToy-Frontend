@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Chart } from '../cmps/Chart.jsx'
 import { toyService } from '../services/toy.service.js'
 import { LabelDoughnutChart } from '../cmps/LabelDoughnutChart.jsx'
 
@@ -16,7 +15,6 @@ export function Dashboard() {
             .then(setLabelCounts)
             .catch(err => console.log('err:', err))
     }, [])
-    console.log('labelCounts:', labelCounts)
 
     if (!labelCounts) return <div className="loader"></div>
 

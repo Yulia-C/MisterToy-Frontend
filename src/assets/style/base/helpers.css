@@ -1,22 +1,22 @@
 /* flex helpers */
 
 .flex {
-  display: flex;
+    display: flex;
 }
 
-.flex.flex-column{
+.flex.flex-column {
     flex-direction: column;
 }
 
-.flex.justify-center{
+.flex.justify-center {
     justify-content: center;
 }
 
-.flex.justify-between{
+.flex.justify-between {
     justify-content: space-between;
 }
 
-.flex.align-center{
+.flex.align-center {
     align-items: center;
 }
 
@@ -71,6 +71,15 @@
     object-fit: contain;
     cursor: pointer;
 }
-.icon.chat::before {
+
+button.cart {
+    color: whitesmoke;
+}
+
+.icon::before {
     content: "sms";
+}
+
+p.show-txt{
+    cursor: pointer;
 }

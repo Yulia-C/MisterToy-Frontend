@@ -24,11 +24,16 @@
 @import "cmps/ToyPreview.css";
 @import "cmps/LoginSignup.css";
 @import "cmps/FormikLoginSignup.css";
+@import "cmps/ReviewEdit.css";
+@import "cmps/ReviewPreview.css";
+@import "cmps/ReviewList.css";
 
 @import "cmps/ToyDetails.css";
-@import "cmps/About.css";
 @import "cmps/ToyEdit.css";
+@import "cmps/About.css";
 @import "cmps/ToyIndex.css";
+@import "cmps/UserPage.css";
+@import "cmps/ShoppingCart.css";
 
 
 .app {
@@ -37,7 +42,7 @@
     min-height: 100vh;
 }
 
-.app > * {
+.app>* {
     width: 100%;
 }
 

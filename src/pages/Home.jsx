@@ -4,7 +4,7 @@ export function Home() {
 
     return (
         <section className="home full">
-            {<img style={{width:'100vw', height:'100%'}}src={heroImg} alt="home page img" />}
+            {<img style={{ width: '100%', height: '100%', size: "contain" }} src={heroImg} alt="home page img" />}
         </section>
     )
 }

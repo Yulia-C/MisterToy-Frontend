@@ -1,0 +1,42 @@
+button.cart {
+    position: relative;
+    border-radius: 50%;
+    padding: .3em;
+    display: inline-block;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: rgb(242, 119, 119);
+    color: rgb(255, 255, 255);
+    border-radius: 50%;
+    font-size: 0.7rem;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart {
+    background-color: rgb(126, 188, 188);
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    gap: 1em;
+    padding: .5em;
+    border-radius: 0 0 10px 10px;
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: .5em;
+
+        button {
+            display: contents;
+        }
+    }
+}

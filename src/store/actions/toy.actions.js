@@ -1,14 +1,15 @@
-import { toyService } from "../../services/toy.service.js";
-import { showSuccessMsg } from "../../services/event-bus.service.js";
-import { ADD_TOY, TOY_UNDO, REMOVE_TOY, SET_TOYS, SET_FILTER, SET_IS_LOADING, UPDATE_TOY, SET_TOY_LABELS } from "../reducers/toy.reducer.js";
+import { toyService } from "../../services/toy.service.js"
+import { ADD_TOY, TOY_UNDO, REMOVE_TOY, SET_TOYS, SET_FILTER, SET_IS_LOADING, UPDATE_TOY, SET_TOY_LABELS, SET_MAX_PAGE, ADD_TO_CART, REMOVE_FROM_CART, TOGGLE_CART } from "../reducers/toy.reducer.js";
 import { store } from "../store.js";
 
 export async function loadToys(filterBy) {
+
     // const filterBy = store.getState().toyModule.filterBy
     store.dispatch({ type: SET_IS_LOADING, isLoading: true })
     try {
-        const toys = await toyService.query(filterBy)
+        const { toys, maxPage } = await toyService.query(filterBy)
         store.dispatch({ type: SET_TOYS, toys })
+        store.dispatch({ type: SET_MAX_PAGE, maxPage })
 
     } catch (err) {
         console.log('toy action -> Cannot load toys', err)
@@ -20,9 +21,17 @@ export async function loadToys(filterBy) {
     }
 }
 
+export async function getToys() {
+    try {
+        const toys = await toyService.query()
+    } catch (err) {
+        console.log('toy action -> Cannot get toys', err)
+        throw err
+    }
+}
 export async function removeToy(toyId) {
     try {
-       await toyService.remove(toyId)
+        await toyService.remove(toyId)
         store.dispatch({ type: REMOVE_TOY, toyId })
     } catch (err) {
         console.log('toy action -> Cannot remove toy', err)
@@ -30,17 +39,15 @@ export async function removeToy(toyId) {
     }
 }
 
-export function removeToyOptimistic(toyId) {
-    store.dispatch({ type: REMOVE_TOY, toyId })
-    return toyService.remove(toyId)
-        .then(() => {
-            showSuccessMsg('Removed Toy!')
-        })
-        .catch(err => {
-            store.dispatch({ type: TOY_UNDO })
-            console.log('toy action -> Cannot remove toy', err)
-            throw err
-        })
+export async function removeToyOptimistic(toyId) {
+    try {
+        store.dispatch({ type: REMOVE_TOY, toyId })
+        await toyService.remove(toyId)
+    } catch (error) {
+        store.dispatch({ type: TOY_UNDO })
+        console.log('toy action -> Cannot remove toy', error)
+        throw error
+    }
 }
 
 export async function saveToy(toy) {
@@ -59,13 +66,14 @@ export function setFilterBy(filterBy) {
     store.dispatch({ type: SET_FILTER, filterBy })
 }
 
-export async function loadToyLabels() {
-    try {
-        const labels = await toyService.getToyLabels()
-        store.dispatch({ type: SET_TOY_LABELS, labels })
-    } catch (err) {
-        console.log('toy action -> Cannot get labels', err)
-        throw err
-    }
+export function addToCart(toy) {
+    store.dispatch({ type: ADD_TO_CART, toy })
+}
 
+export function removeFromCart(toyId) {
+    store.dispatch({ type: REMOVE_FROM_CART, toyId })
+}
+
+export function toggleCart() {
+    store.dispatch({ type: TOGGLE_CART })
 }

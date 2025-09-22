@@ -1,10 +1,13 @@
+
+
 import { toyService } from "../services/toy.service.js"
 import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
 import { saveToy } from "../store/actions/toy.actions.js"
-import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useConfirmTabClose } from "../hooks/useConfirmTabClose.js"
+import { ImgUploader } from '../cmps/ImgUploader.jsx';
+
 import {
     Button,
     Checkbox,
@@ -17,29 +20,31 @@ import {
     TextField,
 } from '@mui/material'
 import { Field, Form, Formik } from 'formik'
-import * as Yup from 'yup'
+import * as Yup from 'Yup'
 
 export function ToyEdit() {
 
     const [toyToEdit, setToyToEdit] = useState(toyService.getEmptyToy())
     const navigate = useNavigate()
-    const params = useParams()
-    const labels = useSelector(storeState => storeState.toyModule.toyLabels)
+    const { toyId } = useParams()
+    const labels = toyService.getToyLabels()
     const setHasUnsavedChanges = useConfirmTabClose()
 
     useEffect(() => {
-        if (params.toyId) loadToy()
+        if (!toyId) return
+        loadToy()
 
     }, [])
 
-    function loadToy() {
-        toyService.get(params.toyId)
-            .then(setToyToEdit)
-            .catch(err => {
-                console.log('err:', err)
-                navigate('/toy')
-                showErrorMsg('Toy not found!')
-            })
+    async function loadToy() {
+        try {
+            const toy = await toyService.get(toyId)
+            setToyToEdit(toy)
+        } catch (error) {
+            console.log('Had issued in toy edit:', error)
+            navigate('/toy')
+            showErrorMsg('Toy not found!')
+        }
     }
 
     const ToySchema = Yup.object().shape({
@@ -52,6 +57,7 @@ export function ToyEdit() {
             .min(1, 'Price must be at least 1'),
         inStock: Yup.boolean(),
         labels: Yup.array().of(Yup.string()).required('Select at least one label'),
+        imgUrl: Yup.string().url('Must be a valid URL')
     })
 
     function customHandleChange(ev, handleChange) {
@@ -74,10 +80,9 @@ export function ToyEdit() {
             })
     }
 
-    if (!labels?.length) return <div>Loading labels...</div>
     return (
         <section className="toy-edit">
-                 <h2>{toyToEdit._id ? 'Edit' : 'Add'} Toy</h2>
+            <h2>{toyToEdit._id ? 'Edit' : 'Add'} Toy</h2>
             <Formik
                 enableReinitialize
                 initialValues={toyToEdit}
@@ -113,6 +118,7 @@ export function ToyEdit() {
                             onChange={e => customHandleChange(e, handleChange)}
                             value={values.price}
                         />
+                        <ImgUploader onUploaded={(imgUrl) => setFieldValue('imgUrl', imgUrl)} />
 
                         <FormControl margin="normal" style={{ minWidth: '20vw' }} variant="outlined">
                             <InputLabel id="labels-label">Labels</InputLabel>
@@ -144,6 +150,7 @@ export function ToyEdit() {
                                     checked={values.inStock}
                                     onChange={e => customHandleChange(e, handleChange)}
                                 />
+
                             }
                             label="In stock"
                         />
@@ -159,5 +166,5 @@ export function ToyEdit() {
                 )}
             </Formik>
         </section>
-)}
-            
+    )
+}

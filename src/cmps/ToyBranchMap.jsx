@@ -1,12 +1,12 @@
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, Fragment, useEffect } from 'react'
+import { useSelector } from 'react-redux';
+import { AdvancedMarker, APIProvider, InfoWindow, Map, Pin, useMap } from '@vis.gl/react-google-maps';
 
-import { AdvancedMarker, APIProvider, InfoWindow, Map, Pin, useMap, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
-
-import { getBranches } from '../services/toy.service.js'
+import { showErrorMsg } from '../services/event-bus.service.js';
+import { loadBranches } from '../store/actions/branch.actions.js';
 
 export function ToyBranchMap() {
-
     return (
         <>
             <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
@@ -17,7 +17,20 @@ export function ToyBranchMap() {
 }
 
 function MapController() {
-    const branches = getBranches()
+
+    const branches = useSelector(storeState => storeState.branchModule.branches)
+
+    useEffect(() => {
+       fetchBranches()
+    }, [])
+
+    async function fetchBranches() {
+        try {
+           await loadBranches()
+        } catch (error) {
+            showErrorMsg('Cannot load branches...')
+        }
+    }
 
     const markerRefs = useRef({})
     const [coords, setCoords] = useState(null)
@@ -41,13 +54,14 @@ function MapController() {
         setCoords(latLng)
     }
 
+    if (!branches) return <div className="loader">Loading branches...</div>;
 
     return (
 
         <section className="container">
 
             <section>
-                <h1>We have 5 branches spread out in Israel and you can find them right here:</h1>
+                <h4>We have 5 branches spread out in Israel and you can find them right here:</h4>
                 <div>
                     {branches.map(branch => (
                         <button
@@ -60,7 +74,7 @@ function MapController() {
                 </div>
             </section>
 
-            <div  className="map-container">
+            <div className="map-container">
                 <Map
                     disableDefaultUI={true}
                     onClick={handleClick}

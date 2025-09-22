@@ -1,21 +1,38 @@
 import { debounce } from "../services/util.service.js"
-import Select from 'react-select'
+// import Select from 'react-select'
 import makeAnimated from 'react-select/animated'
 import { useState, useEffect, useRef } from 'react'
 import { useEffectUpdate } from "../hooks/useEffectUpdate.js"
+import { toyService } from "../services/toy.service.js"
 
-export function ToyFilter({ filterBy, onSetFilterBy, toyLabels }) {
+import {
+    Button,
+    Checkbox,
+    FormControl,
+    FormControlLabel,
+    InputLabel,
+    ListItemText,
+    MenuItem,
+    Select,
+    TextField,
+} from '@mui/material'
+import { Field, Form, Formik } from 'formik'
+import * as Yup from 'Yup'
+
+
+export function ToyFilter({ filterBy, onSetFilterBy }) {
+    const labels = toyService.getToyLabels()
 
     const [filterByToEdit, setFilterByToEdit] = useState({ ...filterBy })
     const onSetFilterDebounce = useRef(debounce(onSetFilterBy, 500)).current
 
-    const animatedComponents = makeAnimated()
-    const labelOptions = toyLabels.map(label => ({
-        value: label,
-        label: label
-    }))
+    // const animatedComponents = makeAnimated()
+    // const labelOptions = labels.map(label => ({
+    //     value: label,
+    //     label: label
+    // }))
 
-    const selectedOptions = labelOptions.filter(option => filterByToEdit.labels?.includes(option.value))
+    // const selectedOptions = labels.filter(option => filterByToEdit.labels?.includes(option))
 
     useEffectUpdate(() => {
         onSetFilterDebounce(filterByToEdit)
@@ -44,60 +61,89 @@ export function ToyFilter({ filterBy, onSetFilterBy, toyLabels }) {
             default: break
         }
         if (field === 'inStock') {
-        if (value === true || value === 'true') value = true
-        else if (value === false || value === 'false') value = false
-        else value = ''
-    }
+            if (value === true || value === 'true') value = true
+            else if (value === false || value === 'false') value = false
+            else value = ''
+        }
+        if (value === 'labels') {
+            value = Array.from(target.selectedOptions, option => option.value || [])
+        }
 
         setFilterByToEdit(prevFilter => ({ ...prevFilter, [field]: value }))
     }
 
-    function onSubmitFilter(ev) {
-        ev.preventDefault()
+    function onSubmitFilter(filterByToEdit) {
+        // ev.preventDefault()
         onSetFilterBy(filterByToEdit)
     }
 
-    const { txt, price, inStock, labels } = filterByToEdit
+    const { txt, price, inStock } = filterByToEdit
     return (
         <section className="container">
             <h2>Filter Toys</h2>
-            <form className="toy-filter container" onSubmit={onSubmitFilter}>
-                {toyLabels && (<div>
-                    <Select
-                        closeMenuOnSelect={false}
-                        isMulti
-                        name="labels"
-                        options={labelOptions}
-                        components={animatedComponents}
-                        value={selectedOptions}
-                        onChange={handleChange}
-                        placeholder="Filter by labels..." /></div>
-                )}
-                <input value={txt || ''} onChange={handleChange}
-                    type="search" placeholder="By Txt" id="txt" name="txt"
-                />
-                <input style={{ width: '80px' }} value={price || ''} onChange={handleChange}
-                    type="number" placeholder="By Price" id="price" name="price"
-                />
+            <div className="toy-filter">
 
-                <div className="radio-btns">
+                <form onSubmit={onSubmitFilter}>
+                    <input value={txt || ''} onChange={handleChange}
+                        type="search" placeholder="By Txt" id="txt" name="txt"
+                    />
+                    <input style={{ width: '80px' }} value={price || ''} onChange={handleChange}
+                        type="number" placeholder="By Price" id="price" name="price"
+                    />
 
-                    <label htmlFor="inStock-all">
-                        <input value='' id="inStock-all" type="radio" onChange={handleChange} name="inStock"
-                            checked={filterByToEdit.inStock === ''} />All
-                    </label>
-                    <label htmlFor="inStock-true">
-                        <input value="true" id="inStock-true" type="radio" onChange={handleChange} name="inStock"
-                            checked={filterByToEdit.inStock === true} />In Stock
-                    </label>
-                    <label htmlFor="inStock-false">
-                        <input value="false" id="inStock-false" type="radio" onChange={handleChange} name="inStock"
-                            checked={filterByToEdit.inStock === false} />Out of stock
-                    </label>
-                </div>
+                    <div className="radio-btns">
 
-                <button hidden>Set Filter</button>
-            </form>
-        </section>
+                        <label htmlFor="inStock-all">All
+                            <input value='' id="inStock-all" type="radio" onChange={handleChange} name="inStock"
+                                checked={filterByToEdit.inStock === ''} />
+                        </label>
+                        <label htmlFor="inStock-true">In Stock
+                            <input value="true" id="inStock-true" type="radio" onChange={handleChange} name="inStock"
+                                checked={filterByToEdit.inStock === true} />
+                        </label>
+                        <label htmlFor="inStock-false">Out of stock
+                            <input value="false" id="inStock-false" type="radio" onChange={handleChange} name="inStock"
+                                checked={filterByToEdit.inStock === false} />
+                        </label>
+                    </div>
+
+                </form>
+                <Formik className="formik-filter"
+                    enableReinitialize
+                    initialValues={filterByToEdit}
+                >
+                    {({ values, setFieldValue }) => (
+                        <Form>
+                            <FormControl margin="normal" style={{ minWidth: '20vw' }} variant="outlined">
+                                <InputLabel id="labels-label">Labels</InputLabel>
+                                <Select
+                                    labelId="labels-label"
+                                    id="labels"
+                                    multiple
+                                    name="labels"
+                                    value={values.labels}
+                                    onChange={ev => {
+                                        handleChange(ev)
+                                        setFieldValue('labels', ev.target.value)
+                                    }}
+                                    renderValue={selected => selected.join(', ')}
+                                    label="Labels"
+                                >
+                                    {labels.map(label => (
+                                        <MenuItem key={label} value={label}>
+                                            <Checkbox checked={values.labels.includes(label)} />
+                                            <ListItemText primary={label} />
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                        </Form>
+                    )}
+                </Formik>
+            </div>
+
+        </section >
+
     )
 }

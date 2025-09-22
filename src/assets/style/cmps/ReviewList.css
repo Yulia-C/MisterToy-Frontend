@@ -1,0 +1,19 @@
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    margin: 1em;
+}
+
+.review-index {
+    height: 100%;
+
+    .review-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        gap: 1em;
+        margin: 1em;
+    }
+}

@@ -1,12 +1,14 @@
 .app-header {
     background-color: var(--clr1);
-    color: var(--clr2bg-light);
-    height: 5em;
+
+    h1,
+    a {
+        color: var(--clr2bg-light);
+    }
 }
 
 .header-container {
     display: flex;
-    align-items: center;
 }
 
 .header-container h1 {
@@ -15,6 +17,7 @@
 
 .app-nav {
     display: flex;
+    flex-wrap: wrap;
     gap: 15px;
     place-items: center;
 
@@ -22,17 +25,29 @@
         font-size: 1em;
         color: rgb(166, 214, 198)
     }
+
+    >a {
+        margin-inline-start: auto;
+    }
+
+    .user-nav {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto auto;
+        column-gap: .4em;
+        place-items: center;
+
+        margin-inline-start: auto;
+
+
+        img {
+            grid-row: 1/-1;
+        }
+    }
 }
 
 a.active {
-    color: rgb(241, 212, 241);
+    color: rgb(169, 208, 238);
     font-weight: 600;
     text-decoration: underline;
-}
-
-
-@media (max-width: 720px) {
-    .app-header {
-        color: var(--clr2bg-light);
-    }
 }

@@ -6,17 +6,25 @@
     gap: 15px;
 }
 
-.toy-list>li {
+.toy-list li {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    border-radius: 5px;
-    background-color: var(--clr1bg);
+    border-radius: 10px;
+    outline: 3px solid var(--clr1bg);
+    background-color: var(--accent);
+}
+
+.toy-list li:hover {
+    scale: 1.02;
+    transition: scale .2s ease-in-out;
+    box-shadow: 1px 1px 17px 5px  #a5d8f296;
 }
 
 .toy-list-btns button {
     box-shadow: 0px 3px 4px 0px rgb(203, 201, 201);
+    /* transition:  hover 0.3s; */
 }
 
 .toy-list-btns>button:hover {

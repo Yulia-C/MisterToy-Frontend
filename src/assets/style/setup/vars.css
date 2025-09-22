@@ -2,12 +2,28 @@
   --clr1: rgb(121, 183, 189);
   --clr2: rgb(149, 220, 209);
 
-  --clr1bg: rgba(212, 249, 198, 0.959);
+  --clr1bg: #a5d8f1;
   --clr1bg-light: rgb(205, 221, 200);
   --clr2bg: rgba(214, 238, 245, 0.86);
   --clr2bg-light: rgb(236, 237, 253);
 
-  --gray1: rgb(240, 240, 240);
+  --accent: #dcf3f557;
+  --gray1: rgb(247, 243, 243);
   --gray2: rgb(155, 155, 155);
   --gray3: rgb(44, 44, 44);
-} 
+}
+
+.dark-mode {
+  --clr1: rgb(52, 77, 79);
+  --clr2: rgb(111, 132, 129);
+
+  --clr1bg: rgba(78, 85, 97, 0.959);
+  --clr1bg-light: rgb(162, 173, 158);
+  --clr2bg: rgba(53, 81, 90, 0.86);
+  --clr2bg-light: rgb(143, 144, 151);
+  --accent: #adc1c357;
+
+  --gray1: rgb(32, 47, 48);
+  --gray2: rgb(155, 155, 155);
+  --gray3: rgb(155, 155, 155);
+}

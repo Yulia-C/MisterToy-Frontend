@@ -1,5 +1,8 @@
 import { storageService } from "./async-storage.service.js"
+import { utilService } from "./util.service.js"
 
+const STORAGE_KEY = 'userDB'
+const STORAGE_KEY_LOGGEDIN = 'loggedinUser'
 
 export const userService = {
     getLoggedinUser,
@@ -8,48 +11,79 @@ export const userService = {
     signup,
     getById,
     query,
-    getEmptyCredentials,
+    remove,
     updateBalance,
     updateUserPrefs,
-    checkEmailExists
-}
-const STORAGE_KEY_LOGGEDIN = 'user'
-const STORAGE_KEY = 'userDB'
-
-function query() {
-    return storageService.query(STORAGE_KEY)
+    checkEmailExists,
+    getEmptyCredentials
 }
 
-function checkEmailExists(email) {
-    return query()
-        .then(users => {
-            return users.some(user => user.email === email)
-        })
-        .catch(err => {
-            console.error('Error checking email:', err)
-            return false
-        })
+_createUsers()
+
+async function query() {
+    const users = await storageService.query(STORAGE_KEY)
+    return users.map(user => {
+        delete user.password
+        return user
+    })
 }
 
-function getById(userId) {
-    return storageService.get(STORAGE_KEY, userId)
+async function getById(userId) {
+    return await storageService.get(STORAGE_KEY, userId)
 }
 
-function login({ username, password }) {
-    return storageService.query(STORAGE_KEY)
-        .then(users => {
-            const user = users.find(user => user.username === username)
-            if (user) return _setLoggedinUser(user)
-            else return Promise.reject('Invalid login')
-        })
+async function remove(userId) {
+    return await storageService.remove(STORAGE_KEY, userId)
 }
 
-function signup({ username, password, fullname, email, gender, balance }) {
-    const user = { username, password, fullname, email, gender, balance }
-    user.createdAt = user.updatedAt = Date.now()
+function getEmptyCredentials() {
+    return {
+        fullname: '',
+        username: '',
+        password: '',
+        email: '',
+        gender: '',
+        balance: 1000,
+        isAdmin: false,
+        imgUrl: ''
+    }
+}
 
-    return storageService.post(STORAGE_KEY, user)
-        .then(_setLoggedinUser)
+
+async function checkEmailExists(email) {
+    const users = await query()
+    return users.some(user => user.email === email)
+
+}
+
+async function login({ username, password }) {
+    const users = await storageService.query(STORAGE_KEY)
+
+    const user = users.find(user => user.username === username)
+    if (user) return _setLoggedinUser(user)
+
+    else return Promise.reject('Invalid login')
+
+}
+
+async function signup(credentials) {
+    let user = credentials
+    if (!user.imgUrl) user.imgUrl = 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png'
+    const userToAdd = {
+        createdAt: Date.now(),
+        username: user.username,
+        password: user.password,
+        fullname: user.fullname,
+        email: user.email,
+        gender: user.gender,
+        imgUrl: user.imgUrl,
+        balance: user.balance,
+        isAdmin: user.isAdmin,
+    }
+    delete userToAdd.password
+
+    const loggedinUser = await storageService.post(STORAGE_KEY, user)
+    return _setLoggedinUser(user)
 }
 
 function logout() {
@@ -63,34 +97,24 @@ function getLoggedinUser() {
 
 function _setLoggedinUser(user) {
     const userToSave = {
-        _id: user._id, fullname: user.fullname
+        _id: user._id, fullname: user.fullname,
+        isAdmin: user.isAdmin, balance: user.balance,
+        imgUrl: user.imgUrl
     }
     sessionStorage.setItem(STORAGE_KEY_LOGGEDIN, JSON.stringify(userToSave))
     return userToSave
 }
 
-function getEmptyCredentials() {
-    return {
-        fullname: '',
-        username: '',
-        password: '',
-        email: '',
-        gender: '',
-        isAdmin: false,
-    }
-}
+async function updateBalance(diff) {
+    let user = await getById(getLoggedinUser()._id)
 
-function updateBalance(diff) {
-    return getById(getLoggedinUser()._id)
-        .then(user => {
-            if (user.balance + diff < 0) return Promise.reject('No credit')
-            user.balance += diff
-            return storageService.put(STORAGE_KEY, user)
-                .then((user) => {
-                    _setLoggedinUser(user)
-                    return user.balance
-                })
-        })
+    if (user.balance + diff < 0) return Promise.reject('No credit')
+    user.balance += diff
+
+    user = await storageService.put(STORAGE_KEY, user)
+    _setLoggedinUser(user)
+    return user.balance
+
 }
 
 function updateUserPrefs(updatedUser) {
@@ -104,15 +128,102 @@ function updateUserPrefs(updatedUser) {
                 })
         })
 }
-// signup({username: 'muki', password: 'muki1', fullname: 'Muki Ja'})
-// login({username: 'muki', password: 'muki1'})
 
-// Data Model:
-// const user = {
-//     _id: "KAtTl",
-//     username: "muki",
-//     password: "muki1",
-//     fullname: "Muki Ja",
-//     createdAt: 1711490430252,
-//     updatedAt: 1711490430999
+
+// async function _createAdmin() {
+//     const admin = {
+//         createdAt: Date.now(),
+//         username: 'admin',
+//         password: 'admin',
+//         fullname: 'Admin Adminov',
+//         email: 'admin@.m.com',
+//         gender: 'female',
+//         imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
+//         balance: 1000,
+//         isAdmin: true,
+//     }
+
+//     return await storageService.post(STORAGE_KEY, admin)
 // }
+
+async function _createUsers() {
+    let users = utilService.loadFromStorage(STORAGE_KEY)
+    if (!users || !users.length) {
+        users = [{
+            createdAt: Date.now(),
+            username: 'admin',
+            password: 'admin',
+            fullname: 'Admin Adminov',
+            email: 'admin@.m.com',
+            gender: 'female',
+            imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
+            balance: 1000,
+            isAdmin: true,
+            _id:'87686'
+        },
+        {
+            createdAt: Date.now(),
+            username: 'johndoe',
+            password: 'pass123',
+            fullname: 'John Doe',
+            email: 'john@example.com',
+            gender: 'male',
+            imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
+            balance: 500,
+            isAdmin: false,
+            _id:'3453'
+        },
+        {
+            createdAt: Date.now(),
+            username: 'janedoe',
+            password: 'pass123',
+            fullname: 'Jane Doe',
+            email: 'jane@example.com',
+            gender: 'female',
+            imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
+            balance: 750,
+            isAdmin: false,
+            _id:'8768'
+        },
+        {
+            createdAt: Date.now(),
+            username: 'bobsmith',
+            password: 'pass123',
+            fullname: 'Bob Smith',
+            email: 'bob@example.com',
+            gender: 'male',
+            imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
+            balance: 300,
+            isAdmin: false,
+            _id:'64565'
+        },
+        {
+            createdAt: Date.now(),
+            username: 'lisawong',
+            password: 'pass123',
+            fullname: 'Lisa Wong',
+            email: 'lisa@example.com',
+            gender: 'female',
+            imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
+            balance: 900,
+            isAdmin: false,
+            _id:'435'
+        },
+        {
+            createdAt: Date.now(),
+            username: 'davidlee',
+            password: 'pass123',
+            fullname: 'David Lee',
+            email: 'david@example.com',
+            gender: 'male',
+            imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
+            balance: 650,
+            isAdmin: false,
+            _id:'123123'
+        }
+        ]
+
+        return utilService.saveToStorage(STORAGE_KEY, users)
+
+    }
+}

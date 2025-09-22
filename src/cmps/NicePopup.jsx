@@ -1,6 +1,6 @@
 import { Fragment, useEffect } from "react"
 import { useKeyListener } from "../hooks/useKeyListener.js"
-export function NicePopup({ header, children, footer, isOpen, onClose }) {
+export function NicePopup({ header, children, isOpen, onClose }) {
 
 
     useKeyListener('Escape', () => {
@@ -16,7 +16,6 @@ export function NicePopup({ header, children, footer, isOpen, onClose }) {
             <section className="nice-popup">
                 <header>{header}</header>
                 <main>{children}</main>
-                <footer>{footer}</footer>
             </section>
 
         </Fragment>

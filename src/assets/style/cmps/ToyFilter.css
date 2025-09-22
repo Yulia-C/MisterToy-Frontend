@@ -1,12 +1,24 @@
 .toy-filter {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
     align-items: center;
     gap: 1em;
 
-    >form {
+    form {
         display: flex;
-        flex-direction: row;
-        justify-self: center;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: center;
         gap: 1em;
     }
+
+    input {
+        padding: .3em;
+        border: 1px solid var(--clr1bg-light)
+    }
+}
+
+.toy-sort>* {
+    font-family: 'Lato Roboto', cursive;
 }

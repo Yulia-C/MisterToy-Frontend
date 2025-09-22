@@ -1,17 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
+
 import { utilService } from '../services/util.service.js'
 
 export function Chat() {
     const [chat, setChat] = useState('')
     const [msgs, setMsgs] = useState([])
     const [autoReply, setAutoReply] = useState('')
+    const messagesEndRef = useRef(null)
 
     const loggedinUser = useSelector(storeState => storeState.userModule.loggedinUser)
 
     useEffect(() => {
-
-    }, [])
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+        }
+    }, [msgs])
 
     function handleChange({ target }) {
 
@@ -35,7 +39,7 @@ export function Chat() {
         ev.preventDefault()
         const newMsg = {
             _id: utilService.makeId(),
-            from: loggedinUser.fullname,
+            from: 'You',
             body: chat
         }
         setMsgs(prevMsgs => [...prevMsgs, newMsg])
@@ -50,12 +54,23 @@ export function Chat() {
                 setMsgs(prevMsgs => [...prevMsgs, autoReply])
 
             })
-        },500)
+        }, 500)
     }
 
     return (
         <section className="chat-container ">
-            <div className="chat-messages">{msgs && msgs.map(msg => <p key={msg._id}>{msg.from}: {msg.body}</p>)}</div>
+            <div className="chat-messages">{msgs && msgs.map(msg =>
+                <div key={msg._id} className={`chat-msg ${msg.from}`}>
+                    <p className="p-from">{msg.from}</p>
+                    <i className="material-symbols-outlined i">
+                        person
+                    </i>
+
+                    <p className={`p-msg ${msg.from}`}>{msg.body}</p>
+                </div>)}
+                    <div ref={messagesEndRef} />
+            </div>
+
             <form className="chat" onSubmit={onSend} >
                 <input type='text' name="body" value={chat} onChange={handleChange} placeholder='Chat bot here :)' />
                 <button>Send</button>

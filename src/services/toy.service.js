@@ -1,128 +1,129 @@
 import { utilService } from './util.service.js'
 import { storageService } from './async-storage.service.js'
+import { userService } from './user.service.js'
 
 const TOY_KEY = 'toyDB'
 const PAGE_SIZE = 5
+
 const labels = ['On wheels', 'Box game', 'Art', 'Baby', 'Doll', 'Puzzle',
-    'Outdoor', 'Battery Powered',]
+    'Outdoor', 'Battery Powered']
 
 _createToys()
-
 
 export const toyService = {
     query,
     get,
     remove,
     save,
-    getEmptyToy,
-    getDefaultFilter,
     getFilterFromSearchParams,
     getPriceStats,
     getMaxPage,
-    getToyLabels,
     getInStockValue,
-    getLabelCounts
+    getLabelCounts,
+    addToyMsg,
+    removeToyMsg,
+    getEmptyToy,
+    getToyLabels,
+    getToys,
+    getDefaultFilter
+
 }
 // For Debug (easy access from console):
 window.cs = toyService
 
+async function getToys() {
+    let toys = await storageService.get(TOY_KEY)
+}
 
+async function query(filterBy = {}) {
 
-function query(filterBy = {}) {
-    
-    return storageService.query(TOY_KEY).then(toys => {
-       
-        let filteredToys = [...toys]
+    let toys = await storageService.query(TOY_KEY)
 
-            if (filterBy.txt) {
-                const regExp = new RegExp(filterBy.txt, 'i')
-                filteredToys = filteredToys.filter(toy => regExp.test(toy.name))
+    if (filterBy.txt) {
+        const regExp = new RegExp(filterBy.txt, 'i')
+        toys = toys.filter(toy => regExp.test(toy.name))
+    }
+
+    if (filterBy.labels?.length) {
+        toys = toys.filter(toy =>
+            filterBy.labels.every(label => toy.labels.includes(label))
+        )
+    }
+
+    if (filterBy.price) {
+        toys = toys.filter(toy => toy.price >= filterBy.price)
+    }
+
+    if (typeof filterBy.inStock === 'boolean') {
+        toys = toys.filter(toy => toy.inStock === filterBy.inStock)
+    }
+
+    if (filterBy.sort) {
+        const dir = +filterBy.sortDir
+        toys.sort((a, b) => {
+            if (filterBy.sort === 'name') {
+                return a.name.localeCompare(b.name) * dir
+            } else if (filterBy.sort === 'price' || filterBy.sort === 'createdAt') {
+                return (a[filterBy.sort] - b[filterBy.sort]) * dir
             }
-
-            if (filterBy.labels?.length) {
-                filteredToys = filteredToys.filter(toy =>
-                    filterBy.labels.every(label => toy.labels.includes(label))
-                )
-            }
-
-            if (filterBy.price) {
-                filteredToys = filteredToys.filter(toy => toy.price >= filterBy.price)
-            }
-
-            if (typeof filterBy.inStock === 'boolean') {
-                filteredToys = filteredToys.filter(toy => toy.inStock === filterBy.inStock)
-            }
-
-            if (filterBy.sort) {
-                const dir = +filterBy.sortDir
-                filteredToys.sort((a, b) => {
-                    if (filterBy.sort === 'name') {
-                        return a.txt.localeCompare(b.txt) * dir
-                    } else if (filterBy.sort === 'price' || filterBy.sort === 'createdAt') {
-                        return (a[filterBy.sort] - b[filterBy.sort]) * dir
-                    }
-                })
-            }
-
-            const filteredToysLength = filteredToys.length
-            if (filterBy.pageIdx !== undefined) {
-                const startIdx = filterBy.pageIdx * PAGE_SIZE
-                filteredToys = filteredToys.slice(startIdx, startIdx + PAGE_SIZE)
-            }
-
-            return Promise.resolve(filteredToys)
         })
+    }
+
+    const filteredToysLength = toys.length
+    if (filterBy.pageIdx !== undefined) {
+        const startIdx = filterBy.pageIdx * PAGE_SIZE
+        toys = toys.slice(startIdx, startIdx + PAGE_SIZE)
+    }
+    const maxPage = Math.ceil(filteredToysLength / PAGE_SIZE)
+
+
+    toys = toys.map(({ _id, name, price, inStock, labels }) => ({ _id, name, price, inStock, labels }))
+    return { toys, maxPage }
 }
 
-function get(toyId) {
-    return storageService.get(TOY_KEY, toyId)
-        .then(toy => {
-            toy = _setNextPrevToyId(toy)
-            return toy
-        })
+async function get(toyId) {
+    let toy = await storageService.get(TOY_KEY, toyId)
+
+    toy = _setNextPrevToyId(toy)
+    return toy
 }
 
-function remove(toyId) {
-    return storageService.remove(TOY_KEY, toyId)
+async function remove(toyId) {
+    return await storageService.remove(TOY_KEY, toyId)
 }
 
-function save(toy) {
+async function save(toy) {
+    let savedToy
     if (toy._id) {
-        // TOY - updatable fields
-        toy.updatedAt = Date.now()
-        return storageService.put(TOY_KEY, toy)
+
+        const toyToUpdate = {
+            name: toy.name,
+            price: toy.price,
+            inStock: toy.inStock,
+            updatedAt: Date.now(),
+            labels: toy.labels,
+            msgs: toy.msgs
+        }
+        savedToy = await storageService.put(TOY_KEY, toyToUpdate)
+
     } else {
-        toy.createdAt = toy.updatedAt = Date.now()
-
-        return storageService.post(TOY_KEY, toy)
+        const toyToSave = {
+            name: toy.name,
+            price: toy.price,
+            inStock: toy.inStock,
+            createdAt: Date.now() - utilService.getRandomIntInclusive(0, 1000 * 60 * 60 * 24),
+            labels: toy.labels,
+            msgs: []
+        }
+        savedToy = await storageService.post(TOY_KEY, toyToSave)
     }
-}
-
-function getEmptyToy(_id, name, price = 10, inStock = true) {
-    return {
-        _id,
-        name,
-        labels: utilService.getTwoUniqueRandomItems(labels),
-        price,
-        inStock: Math.random() < 0.7,
-        createdAt: Date.now() - utilService.getRandomIntInclusive(0, 1000 * 60 * 60 * 24),
-        updatedAt: Date.now()
-    }
+    return savedToy
 }
 
 function getInStockValue(inStock) {
     if (inStock === '') return ''
     if (inStock === 'true') return true
     if (inStock === 'false') return false
-}
-
-function getToyLabels() {
-    // return[...labels]
-    return Promise.resolve(labels)
-}
-
-function getDefaultFilter() {
-    return { txt: '', price: 0, inStock: '', pageIdx: 0, sort: '', sortDir: -1 }
 }
 
 function getFilterFromSearchParams(searchParams) {
@@ -154,75 +155,13 @@ function getMaxPage(filteredToysLength) {
             throw err
         })
 }
-export function getBranches() {
-    const branches = [
-        {
-            _id: "b1f9a8e1-23f4",
-            city: "Tel Aviv",
-            address: "Dizengoff Center, 50 Dizengoff St, Tel Aviv-Yafo",
-            phoneNum: "+972-3-555-1234",
-            hours: "Sun–Thu: 9:00–20:00, Fri: 9:00–14:00, Sat: Closed",
-            position: {
-                lat: 32.0753,
-                lng: 34.7749
-            }
-        },
-        {
-            _id: "2a56d9e3-849f",
-            city: "Haifa",
-            address: "Grand Canyon Mall, 55 Derech Simha Golan, Haifa",
-            phoneNum: "+972-4-555-5678",
-            hours: "Sun–Thu: 10:00–21:00, Fri: 9:00–14:00, Sat: Closed",
-            position: {
-                lat: 32.794,
-                lng: 35.0217
-            }
-        },
-        {
-            _id: "6cfb4cd2-c1de",
-            city: "Jerusalem",
-            address: "Malha Mall, 1 David Remez St, Jerusalem",
-            phoneNum: "+972-2-555-9012",
-            hours: "Sun–Thu: 10:00–20:00, Fri: 9:00–13:00, Sat: Closed",
-            position: {
-                lat: 31.7515,
-                lng: 35.1879
-            }
-        },
-        {
-            _id: "d5aa31df-fec5",
-            city: "Be'er Sheva",
-            address: "BIG Beer Sheva, 21 Derech Hevron, Be'er Sheva",
-            phoneNum: "+972-8-555-3456",
-            hours: "Sun–Thu: 10:00–20:00, Fri: 9:00–14:00, Sat: Closed",
-            position: {
-                lat: 31.252,
-                lng: 34.7915
-            }
-        },
-        {
-            _id: "4aa17661-d061",
-            city: "Eilat",
-            address: "Ice Mall, Kampen St 8, Eilat",
-            phoneNum: "+972-8-555-7890",
-            hours: "Sun–Thu: 11:00–21:00, Fri: 10:00–14:00, Sat: 11:00–22:00",
-            position: {
-                lat: 29.5577,
-                lng: 34.9519
-            }
-        }
-    ]
-
-    return branches
-}
 
 function _createToys() {
     let toys = utilService.loadFromStorage(TOY_KEY)
-
     if (!toys || !toys.length) {
         toys = []
 
-        const names = [
+        const txts = [
             'Talking Teddy',
             'Speedy Car',
             'Magic Blocks',
@@ -247,18 +186,34 @@ function _createToys() {
 
 
         for (let i = 0; i < 20; i++) {
-            const selectedLabels = utilService.getTwoUniqueRandomItems(labels)
-            const name = names[utilService.getRandomIntInclusive(0, names.length - 1)]
+            // const selectedLabels = utilService.getTwoUniqueRandomItems(labels)
+            const name = txts[utilService.getRandomIntInclusive(0, txts.length - 1)]
             const _id = utilService.makeId()
-            toys.push(_createToy(_id, name + '-' + (i + 1), utilService.getRandomIntInclusive(10, 100), selectedLabels,))
+            toys.push(_createToy(_id, name + '-' + (i + 1), utilService.getRandomIntInclusive(10, 100)))
         }
         utilService.saveToStorage(TOY_KEY, toys)
     }
 }
 
 function _createToy(_id, name, price, labels) {
-    const toy = getEmptyToy(_id, name, price, labels)
+    const toy = getEmptyToy(name, price, labels)
+    toy._id = _id
+    toy.msgs = []
     return toy
+}
+
+function getEmptyToy(name, price) {
+    return {
+        name,
+        labels: utilService.getTwoUniqueRandomItems(labels),
+        price,
+        inStock: true,
+    }
+}
+
+
+function getDefaultFilter() {
+    return { txt: '', price: 0, inStock: '', pageIdx: 0, labels: [], sort: '', sortDir: -1 }
 }
 
 function _setNextPrevToyId(toy) {
@@ -297,15 +252,37 @@ function getLabelCounts() {
     })
 }
 
+async function addToyMsg(toyId, txt) {
+    // Later, this is all done by the backend
+    if (!toyId) throw new Error('No toyId provided')
 
+    let toy = await get(toyId)
+    if (!toy) throw new Error('No toy provided')
 
-// Data Model:
-// const toy = {
-//     _id: "gZ6Nvy",
-//     txt: "Master Redux",
-//     price: 9,
-//     inStock: false,
-//     createdAt: 1711472269690,
-//     updatedAt: 1711472269690
-// }
+    const msg = {
+        id: utilService.makeId(),
+        by: userService.getLoggedinUser(),
+        txt
+    }
+    if (!toy.msgs) toy.msgs = []
+    toy.msgs.push(msg)
+    await storageService.put(TOY_KEY, toy)
 
+    return msg
+}
+
+async function removeToyMsg(toyId, msgId) {
+    // Later, this is all done by the backend
+    const toy = await get(toyId)
+    const msgIdX = toy.msgs.findIndex(msg => msg.id === msgId)
+
+    const updatedToy = toy.msgs.splice(msgIdX, 1)
+
+    await storageService.put(TOY_KEY, updatedToy)
+
+    return updatedToy
+}
+
+function getToyLabels() {
+    return [...labels]
+}

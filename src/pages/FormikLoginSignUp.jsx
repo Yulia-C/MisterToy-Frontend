@@ -1,5 +1,5 @@
 import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
+import * as Yup from 'Yup';
 import Button from '@mui/material/Button';
 import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service.js'
 import { userService } from '../services/user.service.js'
